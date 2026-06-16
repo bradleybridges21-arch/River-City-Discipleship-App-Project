@@ -7,6 +7,15 @@ export default async function AdminPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth')
 
+  // Gate: must be a leader of at least one group or own a group
+  const { data: leaderCheck } = await supabase
+    .from('groups')
+    .select('id')
+    .eq('leader_id', user.id)
+    .limit(1)
+
+  if (!leaderCheck || leaderCheck.length === 0) redirect('/home')
+
   // Load all groups this user leads
   const { data: groups } = await supabase
     .from('groups')

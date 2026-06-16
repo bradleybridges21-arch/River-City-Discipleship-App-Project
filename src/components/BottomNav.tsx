@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-const tabs = [
+const BASE_TABS = [
   {
     href: '/home',
     label: 'Home',
@@ -59,23 +59,25 @@ const tabs = [
       </svg>
     ),
   },
-  {
-    href: '/admin',
-    label: 'Admin',
-    icon: (active: boolean) => (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-      </svg>
-    ),
-  },
 ]
 
-export default function BottomNav() {
+const ADMIN_TAB = {
+  href: '/admin',
+  label: 'Admin',
+  icon: (active: boolean) => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+    </svg>
+  ),
+}
+
+export default function BottomNav({ isLeader }: { isLeader: boolean }) {
   const pathname = usePathname()
+  const tabs = isLeader ? [...BASE_TABS, ADMIN_TAB] : BASE_TABS
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 flex items-center justify-around px-2 pb-safe"
+      className="fixed bottom-0 left-0 right-0 flex items-center justify-around px-2"
       style={{
         backgroundColor: 'var(--surface)',
         borderTop: '1px solid var(--border)',
@@ -89,7 +91,7 @@ export default function BottomNav() {
           <Link
             key={tab.href}
             href={tab.href}
-            className="flex flex-col items-center gap-1 min-w-[48px]"
+            className="flex flex-col items-center gap-1 min-w-[44px]"
             style={{ color: active ? 'var(--terracotta)' : 'var(--ink-soft)' }}
           >
             {tab.icon(active)}
