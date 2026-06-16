@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import PageHeader from '@/components/PageHeader'
+import { HYMNS, HYMN_CATEGORIES } from '@/lib/hymns'
+import { BIBLE_BOOKS, OT_SECTIONS, NT_SECTIONS } from '@/lib/bible-books'
 
 interface Teaching {
   id: string; week_label: string; hook: string
@@ -114,13 +116,17 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
   latestResponse: Response | null
 }) {
   const supabase = createClient()
-  const [tab, setTab] = useState<'teaching' | 'catechism' | 'creeds' | 'didache' | 'solas'>('teaching')
+  const [tab, setTab] = useState<'teaching' | 'catechism' | 'creeds' | 'didache' | 'solas' | 'hymns' | 'bible'>('teaching')
   const [creedIndex, setCreedIndex] = useState(0)
   const [responseDraft, setResponseDraft] = useState(latestResponse?.body ?? '')
   const [response, setResponse] = useState<Response | null>(latestResponse)
   const [saving, setSaving] = useState(false)
   const [expandedCat, setExpandedCat] = useState<number | null>(null)
   const [expandedDidache, setExpandedDidache] = useState<number | null>(null)
+  const [expandedHymn, setExpandedHymn] = useState<string | null>(null)
+  const [hymnCategory, setHymnCategory] = useState<string>('All')
+  const [bibleTestament, setBibleTestament] = useState<'OT' | 'NT'>('OT')
+  const [expandedBook, setExpandedBook] = useState<string | null>(null)
 
   const teaching = teachings[0] ?? null
 
@@ -149,7 +155,7 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
 
         {/* Scrollable pill tabs */}
         <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none', marginBottom: '1.25rem' }}>
-          {([['teaching', 'This Week'], ['catechism', 'Catechism'], ['creeds', 'Creeds'], ['didache', 'Didache'], ['solas', '5 Solas']] as const).map(([key, label]) => (
+          {([['teaching', 'This Week'], ['catechism', 'Catechism'], ['creeds', 'Creeds'], ['didache', 'Didache'], ['solas', '5 Solas'], ['hymns', 'Hymns'], ['bible', 'Bible Books']] as const).map(([key, label]) => (
             <button
               key={key}
               onClick={() => setTab(key)}
@@ -329,6 +335,138 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
                     <path d="M6 9l6 6 6-6"/>
                   </svg>
                 </button>
+              )
+            })}
+          </div>
+        )}
+
+        {/* ── Hymns ── */}
+        {tab === 'hymns' && (
+          <div>
+            <div className="glass" style={{ borderRadius: '16px', padding: '1.125rem 1.25rem', marginBottom: '16px', borderLeft: '3px solid var(--mauve)' }}>
+              <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--mauve)', marginBottom: '6px' }}>A Library of Hymns</p>
+              <p style={{ fontSize: '13px', lineHeight: 1.6, color: 'var(--ink-soft)' }}>
+                Hymns are theology sung. Each one was born from a moment — grief, wonder, persecution, revival — and carries within it the convictions of the people who wrote it. To learn a hymn is to inhabit a moment in the long story of the church.
+              </p>
+            </div>
+
+            {/* Category filter */}
+            <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none', marginBottom: '1.25rem' }}>
+              {(['All', ...HYMN_CATEGORIES]).map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setHymnCategory(cat)}
+                  style={{ whiteSpace: 'nowrap', flexShrink: 0, padding: '6px 14px', borderRadius: '16px', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'all 0.15s ease', background: hymnCategory === cat ? 'var(--mauve)' : 'rgba(122,88,130,0.10)', color: hymnCategory === cat ? '#fff' : 'var(--mauve)' }}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            {HYMNS.filter(h => hymnCategory === 'All' || h.category === hymnCategory).map(hymn => {
+              const open = expandedHymn === hymn.id
+              return (
+                <button
+                  key={hymn.id}
+                  onClick={() => setExpandedHymn(open ? null : hymn.id)}
+                  style={{ width: '100%', textAlign: 'left', padding: '1rem 0', display: 'flex', alignItems: 'flex-start', gap: '12px', borderBottom: '1px solid var(--border-soft)', background: 'none', border: 'none', borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: 'var(--border-soft)', cursor: 'pointer' }}
+                >
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontWeight: 700, fontSize: '15px', lineHeight: 1.4, color: 'var(--ink)', paddingRight: '8px' }}>{hymn.title}</p>
+                    <p style={{ fontSize: '11px', color: 'var(--ink-muted)', marginTop: '2px' }}>{hymn.author} · {hymn.year}</p>
+                    {open && (
+                      <div style={{ marginTop: '16px' }}>
+                        <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--mauve)', marginBottom: '6px' }}>Why It Was Written</p>
+                        <p style={{ fontSize: '14px', lineHeight: 1.65, color: 'var(--ink-soft)', marginBottom: '1.25rem' }}>{hymn.occasion}</p>
+
+                        <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--mauve)', marginBottom: '8px' }}>The Words</p>
+                        <div style={{ background: 'rgba(122,88,130,0.06)', borderRadius: '12px', padding: '14px 16px', marginBottom: '1.25rem', borderLeft: '2px solid var(--mauve)' }}>
+                          <p className="font-reading" style={{ fontSize: '15px', lineHeight: 1.85, color: 'var(--ink)', whiteSpace: 'pre-line' }}>{hymn.verses}</p>
+                        </div>
+
+                        <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--mauve)', marginBottom: '6px' }}>What It Means</p>
+                        <p style={{ fontSize: '14px', lineHeight: 1.65, color: 'var(--ink-soft)', marginBottom: '1.25rem' }}>{hymn.meaning}</p>
+
+                        <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--mauve)', marginBottom: '6px' }}>Why the Church Sings It</p>
+                        <p style={{ fontSize: '14px', lineHeight: 1.65, color: 'var(--ink-soft)' }}>{hymn.legacy}</p>
+                      </div>
+                    )}
+                  </div>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--ink-muted)', flexShrink: 0, marginTop: '4px', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>
+                    <path d="M6 9l6 6 6-6"/>
+                  </svg>
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {/* ── Bible Books ── */}
+        {tab === 'bible' && (
+          <div>
+            <div className="glass" style={{ borderRadius: '16px', padding: '1.125rem 1.25rem', marginBottom: '16px', borderLeft: '3px solid var(--blue)' }}>
+              <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--blue)', marginBottom: '6px' }}>The Books of the Bible</p>
+              <p style={{ fontSize: '13px', lineHeight: 1.6, color: 'var(--ink-soft)' }}>
+                Each book has an author, an audience, a moment, and a message. Understanding who wrote it, when, and why changes how we read every page. Scripture is not a timeless collection of spiritual principles — it is the living Word of God spoken into specific times, to specific people, about specific realities.
+              </p>
+            </div>
+
+            {/* OT / NT toggle */}
+            <div className="seg-control" style={{ marginBottom: '1.25rem' }}>
+              <button className={`seg-tab${bibleTestament === 'OT' ? ' active' : ''}`} onClick={() => { setBibleTestament('OT'); setExpandedBook(null) }}>
+                Old Testament
+              </button>
+              <button className={`seg-tab${bibleTestament === 'NT' ? ' active' : ''}`} onClick={() => { setBibleTestament('NT'); setExpandedBook(null) }}>
+                New Testament
+              </button>
+            </div>
+
+            {(bibleTestament === 'OT' ? OT_SECTIONS : NT_SECTIONS).map(section => {
+              const books = BIBLE_BOOKS.filter(b => b.testament === bibleTestament && b.section === section)
+              if (books.length === 0) return null
+              return (
+                <div key={section} style={{ marginBottom: '1.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.5rem' }}>
+                    <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--blue)', whiteSpace: 'nowrap' }}>{section}</p>
+                    <div style={{ flex: 1, height: '1px', background: 'var(--border-soft)' }} />
+                  </div>
+                  {books.map(book => {
+                    const open = expandedBook === book.name
+                    return (
+                      <button
+                        key={book.name}
+                        onClick={() => setExpandedBook(open ? null : book.name)}
+                        style={{ width: '100%', textAlign: 'left', padding: '0.875rem 0', display: 'flex', alignItems: 'flex-start', gap: '12px', background: 'none', border: 'none', borderBottom: '1px solid var(--border-soft)', cursor: 'pointer' }}
+                      >
+                        <span style={{ flexShrink: 0, width: '32px', height: '28px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, background: 'var(--blue-light)', color: 'var(--blue)', marginTop: '1px' }}>
+                          {book.abbreviation}
+                        </span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ fontWeight: 600, fontSize: '14px', lineHeight: 1.4, color: 'var(--ink)', paddingRight: '8px' }}>{book.name}</p>
+                          <p style={{ fontSize: '11px', color: 'var(--ink-muted)', marginTop: '2px' }}>{book.author} · {book.date}</p>
+                          {open && (
+                            <div style={{ marginTop: '16px' }}>
+                              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '1rem' }}>
+                                {book.themes.map(t => (
+                                  <span key={t} style={{ fontSize: '11px', fontWeight: 600, padding: '3px 10px', borderRadius: '10px', background: 'var(--blue-light)', color: 'var(--blue)' }}>{t}</span>
+                                ))}
+                              </div>
+
+                              <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--blue)', marginBottom: '6px' }}>Audience</p>
+                              <p style={{ fontSize: '14px', lineHeight: 1.6, color: 'var(--ink-soft)', marginBottom: '1rem' }}>{book.audience}</p>
+
+                              <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--blue)', marginBottom: '6px' }}>Overview</p>
+                              <p style={{ fontSize: '14px', lineHeight: 1.65, color: 'var(--ink-soft)' }}>{book.preface}</p>
+                            </div>
+                          )}
+                        </div>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--ink-muted)', flexShrink: 0, marginTop: '4px', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>
+                          <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                      </button>
+                    )
+                  })}
+                </div>
               )
             })}
           </div>
