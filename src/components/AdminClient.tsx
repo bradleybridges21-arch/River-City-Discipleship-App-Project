@@ -30,6 +30,7 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
   const [newGroupName, setNewGroupName] = useState('')
   const [creatingGroup, setCreatingGroup] = useState(false)
   const [groupCreated, setGroupCreated] = useState('')
+  const [groupError, setGroupError] = useState('')
 
   // Member invite
   const [selectedGroupId, setSelectedGroupId] = useState(initialGroups[0]?.id ?? '')
@@ -51,11 +52,24 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
   async function createGroup() {
     if (!newGroupName.trim()) return
     setCreatingGroup(true)
-    const { data } = await supabase
+    setGroupError('')
+    setGroupCreated('')
+
+    // Ensure profile row exists (may be missing if user signed up before trigger was added)
+    await supabase.from('profiles').upsert({ id: userId }, { onConflict: 'id' })
+
+    const { data, error } = await supabase
       .from('groups')
       .insert({ name: newGroupName.trim(), leader_id: userId })
       .select()
       .single()
+
+    if (error) {
+      setGroupError(error.message)
+      setCreatingGroup(false)
+      return
+    }
+
     if (data) {
       // Auto-add leader as a member with leader role
       await supabase.from('memberships').insert({
@@ -221,6 +235,7 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
               style={{ backgroundColor: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--ink)' }}
             />
             {groupCreated && <p className="text-xs mb-2" style={{ color: 'var(--sage)' }}>"{groupCreated}" created.</p>}
+            {groupError && <p className="text-xs mb-2" style={{ color: 'var(--terracotta)' }}>{groupError}</p>}
             <button
               onClick={createGroup}
               disabled={creatingGroup || !newGroupName.trim()}
