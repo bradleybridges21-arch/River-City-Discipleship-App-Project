@@ -354,6 +354,16 @@ export const TEACHING_LIBRARY: LibraryTeaching[] = [
     question: 'What would it take for the people around you — neighbors, coworkers, the people you pass every week — to look at your life and your community and ask: what is it that they have? What does your life make them curious about?',
   },
 
+  {
+    id: 'cost-6',
+    theme: 'The Cost of Discipleship',
+    week_label: 'The Shepherd\'s Rebuke',
+    hook: 'We live in a culture that calls correction unkind and calls agreement love. But the shepherd who watches a sheep wander toward a cliff and says nothing is not loving — he is negligent. God has placed pastors and elders in the church not only to comfort and encourage, but to correct. That authority is not theirs by personality or ambition — it is given by God, and they will answer to him for how they use it. A rebuke delivered in humility and love is one of the most Christlike things a shepherd can do.',
+    scripture_ref: 'Hebrews 13:17 — "Obey your leaders and submit to them, for they are keeping watch over your souls, as those who will have to give an account. Let them do this with joy and not with groaning, for that would be of no advantage to you."',
+    application: 'The goal of every rebuke is not correction for its own sake — it is restoration. We wander when we lose sight of the cross. We drift when the weight of sin feels lighter than the joy of righteousness. A faithful shepherd sees that drift before we do and calls us back — not to shame us, but because he has seen what sin costs and what the cross has already purchased. First John 1:9 is not a verse for unbelievers making their first confession. It is the daily reality of the redeemed: "If we confess our sins, he is faithful and just to forgive us our sins and to cleanse us from all unrighteousness." The rebuke is the hand of a shepherd pointing back to that promise.',
+    question: 'Have you ever received a correction from a pastor or leader that, even if it was hard to hear, brought you back to Jesus? What made it land? And is there someone in your life right now whom you love enough to speak an honest word to — if they needed it?',
+  },
+
   // ── THE SACRAMENTS ───────────────────────────────────────
   {
     id: 'sacraments-1',
