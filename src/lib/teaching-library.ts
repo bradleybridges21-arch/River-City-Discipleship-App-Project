@@ -307,6 +307,53 @@ export const TEACHING_LIBRARY: LibraryTeaching[] = [
     question: 'Has science ever felt like a challenge to your faith? What questions do you still find difficult — and which ones have you found good answers to?',
   },
 
+  // ── THE COST OF DISCIPLESHIP ─────────────────────────────
+  {
+    id: 'cost-1',
+    theme: 'The Cost of Discipleship',
+    week_label: 'Take Up Your Cross',
+    hook: 'Jesus never ran a soft recruitment campaign. He didn\'t say "come and see if this fits your lifestyle." He said: deny yourself, take up your cross, and follow me. In the first century, everyone who heard those words knew exactly what a cross meant — it was the instrument of public execution for enemies of the empire. To take up your cross was to walk toward death. Jesus was not speaking in metaphor. He was describing the shape of a life.',
+    scripture_ref: 'Luke 9:23–24 — "And he said to all, \'If anyone would come after me, let him deny himself and take up his cross daily and follow me. For whoever would save his life will lose it, but whoever loses his life for my sake will save it.\'"',
+    application: 'The cross is not the hard week at work or the difficult relative. The cross is the death of self-will — the daily choice to release your claim on your own life and hand it back to the One who made it. Bonhoeffer wrote: "When Christ calls a man, he bids him come and die." Not once. Daily. The call has not changed.',
+    question: 'What is the thing in your life right now that you are most reluctant to surrender to Jesus? What would it mean to lay it down — not as a loss, but as trust?',
+  },
+  {
+    id: 'cost-2',
+    theme: 'The Cost of Discipleship',
+    week_label: 'The Same Call, Every Century',
+    hook: 'We tend to think of the martyrs as a different category of Christian — heroic, extraordinary, almost a different species. But Polycarp, who was burned at the stake in 155 AD, was a disciple of the Apostle John. John had walked with Jesus. Polycarp had walked with John. The chain of ordinary discipleship ran straight from Jesus to a man who died rather than say "Caesar is Lord." The call was the same. The cost was the same. The One who called was the same.',
+    scripture_ref: 'Hebrews 12:1–2 — "Therefore, since we are surrounded by so great a cloud of witnesses, let us also lay aside every weight, and sin which clings so closely, and let us run with endurance the race that is set before us, looking to Jesus, the founder and perfecter of our faith."',
+    application: 'The cloud of witnesses is not a crowd of spectators watching from a safe distance. They are people who ran the same race on the same road before us, and their lives are the evidence that it can be done. Polycarp was asked one last time to renounce Christ. He said: "Eighty-six years I have served him, and he has done me no wrong. How can I blaspheme my King who saved me?" That is the finish line. Run toward it.',
+    question: 'Who is in your cloud of witnesses — someone whose faith has marked you? What does their example ask of you right now?',
+  },
+  {
+    id: 'cost-3',
+    theme: 'The Cost of Discipleship',
+    week_label: 'The Enemy Is Real',
+    hook: 'One of the great comforts of comfortable Christianity is that it has no real adversary. If following Jesus costs nothing, there is nothing for the enemy to oppose. But the New Testament is relentlessly clear: there is a real enemy, he is active, and he is not neutral about your discipleship. The armor of God in Ephesians 6 is not decorative — it is battle gear. Peter, who had been nearly destroyed by the enemy\'s sifting, warns the church: "Your adversary the devil prowls around like a roaring lion, seeking someone to devour."',
+    scripture_ref: 'Ephesians 6:12 — "For we do not wrestle against flesh and blood, but against the rulers, against the authorities, against the cosmic powers over this present darkness, against the spiritual forces of evil in the heavenly places."',
+    application: 'The enemy\'s most effective strategy in the West is not persecution — it is distraction. He does not need to destroy your faith if he can simply crowd it out. Busyness. Comfort. Comparison. Cynicism. These are his weapons in seasons of ease. A disciple who is not alert is a disciple who is already losing ground. Sobriety and vigilance are not anxious words — they are the posture of someone who knows the stakes and trusts the Victor.',
+    question: 'Where do you sense the most spiritual resistance in your life right now? What would it mean to name it as spiritual opposition rather than just circumstance — and to respond accordingly?',
+  },
+  {
+    id: 'cost-4',
+    theme: 'The Cost of Discipleship',
+    week_label: 'Cheap Grace and the Real Thing',
+    hook: 'Dietrich Bonhoeffer wrote "The Cost of Discipleship" from inside Nazi Germany, watching a church capitulate to evil because it had traded the costly grace of the gospel for what he called "cheap grace" — forgiveness without repentance, baptism without discipline, communion without confession, absolution without accountability. Cheap grace is the grace we give ourselves: the preaching of forgiveness without requiring forsaking. It is grace without the cross. And it is, he said, the deadliest enemy of the church.',
+    scripture_ref: 'Romans 6:1–2 — "What shall we say then? Are we to continue in sin that grace may abound? By no means! How can we who died to sin still live in it?"',
+    application: 'Costly grace is not grace that we earn. It is grace that cost God everything — the incarnation, the suffering, the cross — and therefore it lays claim on everything in return. It is grace that calls us to follow a real Jesus into a real life of real obedience. Not to earn our standing, but because we have a standing worth living from. The grace that does not change you has not reached you.',
+    question: 'Is there an area of your life where you have been receiving cheap grace — holding onto something you know Jesus is asking you to release, while telling yourself it\'s covered? What would costly grace ask you to do about it?',
+  },
+  {
+    id: 'cost-5',
+    theme: 'The Cost of Discipleship',
+    week_label: 'A Love the World Cannot Explain',
+    hook: 'In 165 AD, a plague swept through the Roman Empire. Wealthy citizens fled the cities. Physicians left their patients. But the Christians stayed. They nursed the sick, buried the dead, and cared for the abandoned — including pagan strangers. The historian Rodney Stark estimates that this Christian response to the Antonine Plague may have doubled or tripled the survival rate among those they cared for, and it transformed the reputation of the church throughout the empire. They did not stay because they were unafraid of death. They stayed because they had already died — and been raised with Christ.',
+    scripture_ref: 'John 13:34–35 — "A new commandment I give to you, that you love one another: just as I have loved you, you also are to love one another. By this all people will know that you are my disciples, if you have love for one another."',
+    application: 'The early church did not grow primarily through arguments. It grew through a quality of life the empire had never seen — a people who loved across every line that Rome used to divide: slave and free, Jew and Greek, rich and poor, sick and healthy. You did not need to explain Jesus if people could watch his community. You did not need to defend the resurrection if you could point to people living as if it were true. That is still the call. A love the world cannot produce and cannot explain is the most powerful apologetic.',
+    question: 'What would it take for the people around you — neighbors, coworkers, the people you pass every week — to look at your life and your community and ask: what is it that they have? What does your life make them curious about?',
+  },
+
   // ── THE SACRAMENTS ───────────────────────────────────────
   {
     id: 'sacraments-1',
