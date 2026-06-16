@@ -306,6 +306,44 @@ export const TEACHING_LIBRARY: LibraryTeaching[] = [
     application: 'The fine-tuning of the universe, the origin of life, the existence of consciousness, the reality of objective morality — none of these are solved by naturalism. They are, if anything, more mysterious the more we learn. The Christian has no reason to fear the data.',
     question: 'Has science ever felt like a challenge to your faith? What questions do you still find difficult — and which ones have you found good answers to?',
   },
+
+  // ── THE SACRAMENTS ───────────────────────────────────────
+  {
+    id: 'sacraments-1',
+    theme: 'The Sacraments',
+    week_label: 'Baptism: Buried and Raised',
+    hook: 'Baptism is not a certificate of membership or a graduation ceremony. It is a death and a resurrection. When you go under the water, you are buried with Christ. When you come up, you are raised with him into a new life. This is why the early church called baptism "the washing of regeneration" — not because the water saves you, but because it enacts what God has already declared to be true of you.',
+    scripture_ref: 'Romans 6:3–4 — "Do you not know that all of us who have been baptized into Christ Jesus were baptized into his death? We were buried therefore with him by baptism into death, in order that, just as Christ was raised from the dead by the glory of the Father, we too might walk in newness of life."',
+    application: 'The early church baptized new believers immediately — Acts 2, Acts 8, Acts 16. Baptism was not delayed until someone "had it all together." It was the first act of a disciple, the public declaration that you now belong to Jesus. If you have been baptized, return to it this week — not to repeat it, but to remember it. Your baptism is a stake in the ground that the enemy cannot pull up.',
+    question: 'What does your baptism mean to you — or if you haven\'t been baptized, what is holding you back? How might living from your baptismal identity change how you face your week?',
+  },
+  {
+    id: 'sacraments-2',
+    theme: 'The Sacraments',
+    week_label: 'Baptism and the Early Church',
+    hook: 'For the first three centuries, baptism was a serious, costly event. Candidates underwent months of instruction — the "catechumenate" — before they were admitted to the waters. Being baptized in the Roman Empire meant publicly defecting from the gods of the empire and pledging allegiance to a crucified Jewish rabbi. It was not a private spiritual experience. It was a political act with real consequences.',
+    scripture_ref: 'Acts 2:38,41 — "Peter said to them, \'Repent and be baptized every one of you in the name of Jesus Christ for the forgiveness of your sins, and you will receive the gift of the Holy Spirit.\' So those who received his word were baptized, and there were added that day about three thousand souls."',
+    application: 'The Didache — one of the earliest Christian documents outside the New Testament — gives detailed instructions for baptism: use running water if possible, fast beforehand, pray in the name of the Trinity. The early church treated baptism as the defining boundary between the old life and the new. We recover something when we treat it that way too.',
+    question: 'What would it mean for you to take your baptism more seriously as a marker of identity — as the moment you became someone who belongs to Jesus, not just someone who agreed with Jesus?',
+  },
+  {
+    id: 'sacraments-3',
+    theme: 'The Sacraments',
+    week_label: 'The Lord\'s Supper: Remember Me',
+    hook: 'On the night he was betrayed, Jesus took bread and wine — the most ordinary things on the table — and made them the center of everything. "Do this in remembrance of me." But the Greek word for remembrance, anamnesis, is stronger than our word. It doesn\'t mean "think about me occasionally." It means "make me present again." The Table is not a memorial to someone absent. It is a meal with someone who is here.',
+    scripture_ref: '1 Corinthians 11:23–26 — "The Lord Jesus on the night when he was betrayed took bread, and when he had given thanks, he broke it, and said, \'This is my body, which is for you. Do this in remembrance of me.\' In the same way also he took the cup, after supper, saying, \'This cup is the new covenant in my blood. Do this, as often as you drink it, in remembrance of me.\'"',
+    application: 'The early church gathered every Sunday — the day of resurrection — to break bread together. They called it the Eucharist, from the Greek for "thanksgiving." Coming to the Table was the heartbeat of Christian community. It proclaimed the Lord\'s death, celebrated his resurrection, and anticipated his return. Every time we eat this meal, we are making a claim about the shape of history.',
+    question: 'What do you actually experience when you take communion? Is it rote, or does it carry weight for you? What might change if you came to the Table expecting to meet a living person?',
+  },
+  {
+    id: 'sacraments-4',
+    theme: 'The Sacraments',
+    week_label: 'One Bread, One Body',
+    hook: 'Paul\'s sharpest rebuke of the Corinthian church was not about their theology — it was about how they ate the Lord\'s Supper. The wealthy ate first and ate well. The poor arrived late to nothing. "When you come together it is not the Lord\'s Supper that you eat," Paul says. To eat the bread and drink the cup while despising the people Christ died for is to eat and drink judgment. The Table cannot be separated from the community.',
+    scripture_ref: '1 Corinthians 10:16–17 — "The cup of blessing that we bless, is it not a participation in the blood of Christ? The bread that we break, is it not a participation in the body of Christ? Because there is one bread, we who are many are one body, for we all partake of the one bread."',
+    application: 'The Table is not just a private transaction between me and Jesus. It is a public declaration that I am one body with these people — the ones I find easy to love and the ones I find difficult. You cannot receive the body of Christ at the Table and then treat the body of Christ in the room as beneath you. The ancient practice of "passing the peace" before communion is not a greeting — it is a reconciliation. Come to the Table only after you have dealt with what is between you and your brother.',
+    question: 'Is there anyone in your community with whom you have unresolved tension? How does the reality of the Lord\'s Table — one bread, one body — press on that relationship?',
+  },
 ]
 
 export const THEMES = [...new Set(TEACHING_LIBRARY.map(t => t.theme))]
