@@ -43,7 +43,7 @@ export default function SeekChrist({ userId }: { userId: string }) {
         .order('created_at', { ascending: false })
         .limit(10)
 
-      setPrayers((p as PrayerRequest[]) ?? [])
+      setPrayers((p as unknown as PrayerRequest[]) ?? [])
     }
 
     load()
@@ -80,7 +80,7 @@ export default function SeekChrist({ userId }: { userId: string }) {
       .single()
 
     if (data) {
-      setPrayers(prev => [data as PrayerRequest, ...prev.slice(0, 9)])
+      setPrayers(prev => [data as unknown as PrayerRequest, ...prev.slice(0, 9)])
       setPrayerDraft('')
     }
 
