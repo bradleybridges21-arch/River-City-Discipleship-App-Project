@@ -14,13 +14,16 @@
   --border: #ddd5c0;
   --border-soft: #ece6d8;
 
+  /* Dark layer — rich warm black */
+  --dark: #0c0a07;
+  --dark-2: #171410;
+  --dark-3: #201c14;
+
   /* Brand colors */
   --terracotta: #b85c3a;
   --terracotta-light: #f0e0d6;
   --sage: #5c7a60;
   --sage-light: #ddeadb;
-
-  /* Extended palette — soft but vibrant */
   --slate: #5c7a96;
   --slate-light: #dce8f0;
   --gold: #b07830;
@@ -30,10 +33,11 @@
   --sienna: #8a5a3a;
   --sienna-light: #eeddd0;
 
-  /* Depth */
-  --shadow-sm: 0 1px 4px rgba(30, 27, 22, 0.07), 0 0 0 1px rgba(30,27,22,0.04);
-  --shadow-md: 0 4px 16px rgba(30, 27, 22, 0.10), 0 1px 4px rgba(30,27,22,0.06);
-  --shadow-lg: 0 8px 32px rgba(30, 27, 22, 0.13), 0 2px 8px rgba(30,27,22,0.08);
+  /* Elevation shadows */
+  --shadow-sm: 0 1px 4px rgba(30,27,22,0.06), 0 0 0 1px rgba(30,27,22,0.03);
+  --shadow-md: 0 4px 16px rgba(30,27,22,0.09), 0 1px 4px rgba(30,27,22,0.05);
+  --shadow-lg: 0 8px 32px rgba(30,27,22,0.12), 0 2px 8px rgba(30,27,22,0.07);
+  --shadow-xl: 0 16px 48px rgba(30,27,22,0.16), 0 4px 16px rgba(30,27,22,0.09);
 }
 
 html, body {
@@ -41,41 +45,115 @@ html, body {
   color: var(--ink);
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
 }
 
+/* ── Reading serif ─────────────────────────────────── */
 .font-reading {
   font-family: 'Newsreader', Georgia, serif;
 }
 
-/* Display titles — Newsreader serif for page headings */
+/* ── Display titles ────────────────────────────────── */
 .page-title {
   font-family: 'Newsreader', Georgia, serif;
   font-size: 2.25rem;
   font-weight: 500;
   line-height: 1.15;
   letter-spacing: -0.01em;
-  color: var(--ink);
+  color: #fff;
 }
 
 .page-title-rule {
   display: block;
-  width: 2.5rem;
+  width: 2rem;
   height: 2px;
   background: var(--terracotta);
   margin-top: 0.5rem;
   border-radius: 2px;
 }
 
-/* Card depth layers */
-.card {
-  background: var(--surface);
-  box-shadow: var(--shadow-sm);
-  border-radius: 12px;
+/* ── Glass cards ───────────────────────────────────── */
+
+/* Light glass — sits on warm paper */
+.glass {
+  background: rgba(255, 255, 255, 0.70);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  box-shadow: 0 4px 20px rgba(30,27,22,0.07),
+              0 1px 4px rgba(30,27,22,0.04),
+              inset 0 1px 0 rgba(255,255,255,0.95);
 }
 
-.card-raised {
-  background: var(--surface);
-  box-shadow: var(--shadow-md);
-  border-radius: 12px;
+/* Dark glass — sits on dark hero backgrounds */
+.glass-dark {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.30),
+              inset 0 1px 0 rgba(255,255,255,0.07);
 }
+
+/* ── iOS-style segmented control ───────────────────── */
+.seg-control {
+  display: flex;
+  background: rgba(255,255,255,0.50);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.80);
+  border-radius: 13px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.seg-tab {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  background: transparent;
+  color: var(--ink-muted);
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+
+.seg-tab.active {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 6px rgba(30,27,22,0.14);
+}
+
+/* ── Buttons ───────────────────────────────────────── */
+.btn-glass {
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.28);
+  border-radius: 10px;
+  color: #fff;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--terracotta);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  color: #fff;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(184,92,58,0.30);
+  transition: opacity 0.15s ease;
+}
+
+.btn-primary:disabled { opacity: 0.45; }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import PageHeader from '@/components/PageHeader'
 
 interface Teaching {
   id: string; week_label: string; hook: string
@@ -79,186 +80,146 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
   const creed = CREEDS[creedIndex]
 
   return (
-    <div className="px-5 pt-10">
-      <h1 className="page-title">Learn</h1>
-      <span className="page-title-rule mb-4" />
-      <p className="text-sm mt-3 mb-5" style={{ color: 'var(--ink-soft)' }}>Teaching, catechism, and the creeds.</p>
+    <div>
+      <PageHeader title="Learn" subtitle="Teaching, catechism, and the creeds." glowColor="rgba(176,120,48,0.20)" />
 
-      {/* Tabs */}
-      <div className="flex gap-2 mb-6 flex-wrap">
-        {([['teaching', 'This week'], ['catechism', 'Catechism'], ['creeds', 'Creeds']] as const).map(([key, label]) => (
-          <button
-            key={key}
-            onClick={() => setTab(key)}
-            className="px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
-            style={{
-              backgroundColor: tab === key ? 'var(--terracotta)' : 'var(--surface)',
-              color: tab === key ? '#fff' : 'var(--ink-soft)',
-              border: '1px solid var(--border)',
-            }}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <div style={{ background: 'var(--paper)', borderRadius: '24px 24px 0 0', marginTop: '-20px', position: 'relative', zIndex: 1, padding: '1.5rem 1.125rem 2rem' }}>
 
-      {/* ── This week's teaching ── */}
-      {tab === 'teaching' && (
-        <div className="flex flex-col gap-4">
-          {!teaching ? (
-            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-              <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Your leader hasn't posted this week's teaching yet. Check back soon.</p>
-            </div>
-          ) : (
-            <>
-              <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)' }}>
-                {/* Gradient header */}
-                <div className="px-5 pt-5 pb-4 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--terracotta-light) 0%, var(--surface) 70%)' }}>
-                  <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: 'var(--terracotta)' }} />
-                  <p className="text-xs font-semibold tracking-widest uppercase mb-3 pl-3" style={{ color: 'var(--terracotta)' }}>{teaching.week_label}</p>
-                  <p className="text-base leading-relaxed pl-3" style={{ color: 'var(--ink)' }}>{teaching.hook}</p>
-                </div>
-                <div className="p-5">
-
-                  <div className="flex items-start gap-3 mb-4">
-                    <div className="w-0.5 self-stretch rounded-lg flex-shrink-0 mt-1" style={{ backgroundColor: 'var(--sage)' }} />
-                    <p className="font-reading italic leading-relaxed" style={{ color: 'var(--ink)', fontSize: '17px' }}>{teaching.scripture_ref}</p>
-                  </div>
-
-                  {teaching.application && (
-                    <p className="text-sm leading-relaxed mt-4" style={{ color: 'var(--ink-soft)' }}>{teaching.application}</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
-                <div className="h-0.5 w-full" style={{ backgroundColor: 'var(--sage)' }} />
-                <div className="p-5">
-                  <p className="font-semibold mb-3 leading-snug" style={{ color: 'var(--ink)', fontSize: '16px' }}>{teaching.question}</p>
-                  <textarea
-                    value={responseDraft}
-                    onChange={e => setResponseDraft(e.target.value)}
-                    rows={5}
-                    placeholder="Write your response… your leader will see this."
-                    className="w-full rounded-xl px-4 py-3 text-sm resize-none outline-none"
-                    style={{ backgroundColor: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--ink)' }}
-                  />
-                  <button
-                    onClick={saveResponse}
-                    disabled={saving || !responseDraft.trim()}
-                    className="mt-3 px-5 py-2 rounded-xl text-sm font-semibold transition-opacity"
-                    style={{ backgroundColor: 'var(--terracotta)', color: '#fff', opacity: saving || !responseDraft.trim() ? 0.5 : 1 }}
-                  >
-                    {saving ? 'Saving…' : response ? 'Update response' : 'Share response'}
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
+        {/* iOS segmented control */}
+        <div className="seg-control" style={{ marginBottom: '1.25rem' }}>
+          {([['teaching', 'This Week'], ['catechism', 'Catechism'], ['creeds', 'Creeds']] as const).map(([key, label]) => (
+            <button key={key} className={`seg-tab${tab === key ? ' active' : ''}`} onClick={() => setTab(key)}>
+              {label}
+            </button>
+          ))}
         </div>
-      )}
 
-      {/* ── Catechism — accordion list ── */}
-      {tab === 'catechism' && (
-        <div className="flex flex-col">
-          {/* Header */}
-          <div className="flex items-center gap-3 mb-5">
-            <div className="flex-1 h-px" style={{ backgroundColor: 'var(--border)' }} />
-            <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--ink-soft)' }}>
-              Westminster Shorter Catechism
-            </span>
-            <div className="flex-1 h-px" style={{ backgroundColor: 'var(--border)' }} />
+        {/* ── This week's teaching ── */}
+        {tab === 'teaching' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {!teaching ? (
+              <div className="glass" style={{ borderRadius: '16px', padding: '1.25rem' }}>
+                <p style={{ color: 'var(--ink-muted)', fontSize: '14px' }}>Your leader hasn't posted this week's teaching yet. Check back soon.</p>
+              </div>
+            ) : (
+              <>
+                <div className="glass" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+                  <div style={{ height: '2px', background: 'var(--terracotta)' }} />
+                  <div style={{ padding: '1.125rem 1.25rem' }}>
+                    <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--terracotta)', marginBottom: '0.625rem' }}>
+                      {teaching.week_label}
+                    </p>
+                    <p style={{ fontSize: '15px', lineHeight: 1.65, color: 'var(--ink)', marginBottom: '1rem' }}>{teaching.hook}</p>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+                      <div style={{ width: '2px', flexShrink: 0, alignSelf: 'stretch', borderRadius: '2px', background: 'var(--sage)' }} />
+                      <p className="font-reading" style={{ color: 'var(--ink)', fontSize: '17px', fontStyle: 'italic', lineHeight: 1.7 }}>{teaching.scripture_ref}</p>
+                    </div>
+                    {teaching.application && (
+                      <p style={{ fontSize: '14px', lineHeight: 1.65, color: 'var(--ink-soft)' }}>{teaching.application}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="glass" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+                  <div style={{ height: '2px', background: 'var(--sage)' }} />
+                  <div style={{ padding: '1.125rem 1.25rem' }}>
+                    <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: '0.625rem' }}>
+                      This week's question
+                    </p>
+                    <p style={{ fontWeight: 600, fontSize: '15px', lineHeight: 1.55, color: 'var(--ink)', marginBottom: '1rem' }}>{teaching.question}</p>
+                    <textarea
+                      value={responseDraft}
+                      onChange={e => setResponseDraft(e.target.value)}
+                      rows={5}
+                      placeholder="Write your response… your leader will see this."
+                      style={{ width: '100%', borderRadius: '10px', padding: '12px', fontSize: '14px', resize: 'none', outline: 'none', border: '1px solid rgba(255,255,255,0.8)', background: 'rgba(255,255,255,0.6)', color: 'var(--ink)', fontFamily: 'inherit' }}
+                    />
+                    <button onClick={saveResponse} disabled={saving || !responseDraft.trim()} className="btn-primary" style={{ marginTop: '10px' }}>
+                      {saving ? 'Saving…' : response ? 'Update response' : 'Share response'}
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
+        )}
 
-          <div className="flex flex-col gap-0">
+        {/* ── Catechism ── */}
+        {tab === 'catechism' && (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.25rem' }}>
+              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+              <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--ink-muted)' }}>
+                Westminster Shorter Catechism
+              </p>
+              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+            </div>
+
             {CATECHISM.map((item, i) => {
               const accent = ACCENTS[i % ACCENTS.length]
               const open = expandedCat === i
               return (
-                <div key={i}>
-                  <button
-                    onClick={() => setExpandedCat(open ? null : i)}
-                    className="w-full text-left py-4 flex items-start gap-4"
-                    style={{ borderBottom: `1px solid var(--border)` }}
-                  >
-                    {/* Colored number pill */}
-                    <span
-                      className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold mt-0.5"
-                      style={{ backgroundColor: accent + '22', color: accent }}
-                    >
-                      {i + 1}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-sm leading-snug pr-2" style={{ color: 'var(--ink)' }}>
-                        {item.q}
-                      </p>
-                      {open && (
-                        <div className="mt-3">
-                          {/* Left accent line */}
-                          <div className="flex gap-3">
-                            <div className="w-0.5 flex-shrink-0 rounded-lg self-stretch" style={{ backgroundColor: accent }} />
-                            <p className="font-reading leading-relaxed pb-1" style={{ color: 'var(--ink)', fontSize: '15px' }}>
-                              {item.a}
-                            </p>
-                          </div>
-                          <p className="text-xs mt-3 ml-3 font-medium" style={{ color: accent }}>
-                            Westminster Shorter Catechism · {item.ref}
-                          </p>
+                <button
+                  key={i}
+                  onClick={() => setExpandedCat(open ? null : i)}
+                  style={{ width: '100%', textAlign: 'left', padding: '1rem 0', display: 'flex', alignItems: 'flex-start', gap: '12px', borderBottom: `1px solid var(--border-soft)`, background: 'none', border: 'none', cursor: 'pointer' }}
+                >
+                  <span style={{ flexShrink: 0, width: '28px', height: '28px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, background: accent + '20', color: accent, marginTop: '1px' }}>
+                    {i + 1}
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontWeight: 600, fontSize: '14px', lineHeight: 1.45, color: 'var(--ink)', paddingRight: '8px' }}>{item.q}</p>
+                    {open && (
+                      <div style={{ marginTop: '12px' }}>
+                        <div style={{ display: 'flex', gap: '12px' }}>
+                          <div style={{ width: '2px', flexShrink: 0, borderRadius: '2px', background: accent, alignSelf: 'stretch' }} />
+                          <p className="font-reading" style={{ color: 'var(--ink)', fontSize: '15px', lineHeight: 1.7 }}>{item.a}</p>
                         </div>
-                      )}
-                    </div>
-                    <span className="flex-shrink-0 mt-0.5 transition-transform" style={{ color: 'var(--border)', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M6 9l6 6 6-6"/>
-                      </svg>
-                    </span>
-                  </button>
-                </div>
+                        <p style={{ fontSize: '11px', fontWeight: 600, color: accent, marginTop: '10px', marginLeft: '14px' }}>
+                          Westminster Shorter Catechism · {item.ref}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--ink-muted)', flexShrink: 0, marginTop: '4px', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>
+                    <path d="M6 9l6 6 6-6"/>
+                  </svg>
+                </button>
               )
             })}
           </div>
-        </div>
-      )}
+        )}
 
-      {/* ── Creeds ── */}
-      {tab === 'creeds' && (
-        <div className="flex flex-col gap-4">
-          {/* Creed selector — pill toggle */}
-          <div className="flex rounded-xl overflow-hidden" style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
-            {CREEDS.map((c, i) => (
-              <button
-                key={i}
-                onClick={() => setCreedIndex(i)}
-                className="flex-1 py-3 text-xs font-semibold transition-colors"
-                style={{
-                  backgroundColor: creedIndex === i ? 'var(--ink)' : 'transparent',
-                  color: creedIndex === i ? '#fff' : 'var(--ink-soft)',
-                }}
-              >
-                {c.shortTitle}
-              </button>
-            ))}
-          </div>
-
-          <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)' }}>
-            <div className="px-5 py-4 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--gold-light) 0%, var(--surface) 70%)' }}>
-              <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: 'var(--gold)' }} />
-              <p className="text-xs font-semibold tracking-widest uppercase pl-3" style={{ color: 'var(--gold)' }}>{creed.title}</p>
-              <p className="text-xs pl-3 mt-1" style={{ color: 'var(--ink-muted)' }}>{creed.date}</p>
-            </div>
-            <div className="p-5">
-              {creed.text.split('\n\n').map((para, i) => (
-                <div key={i} className="mb-4 flex gap-3 items-start">
-                  <div className="w-0.5 flex-shrink-0 self-stretch rounded-lg" style={{ backgroundColor: i === 0 ? 'var(--gold)' : 'var(--border)' }} />
-                  <p className="font-reading leading-relaxed" style={{ color: 'var(--ink)', fontSize: '16px' }}>
-                    {para}
-                  </p>
-                </div>
+        {/* ── Creeds ── */}
+        {tab === 'creeds' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {/* Creed selector */}
+            <div className="seg-control">
+              {CREEDS.map((c, i) => (
+                <button key={i} className={`seg-tab${creedIndex === i ? ' active' : ''}`} onClick={() => setCreedIndex(i)}>
+                  {c.shortTitle}
+                </button>
               ))}
             </div>
+
+            <div className="glass" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+              <div style={{ height: '2px', background: 'var(--gold)' }} />
+              <div style={{ padding: '1.125rem 1.25rem 0.25rem' }}>
+                <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '4px' }}>{creed.title}</p>
+                <p style={{ fontSize: '11px', color: 'var(--ink-muted)', marginBottom: '1rem' }}>{creed.date}</p>
+              </div>
+              <div style={{ padding: '0 1.25rem 1.25rem' }}>
+                {creed.text.split('\n\n').map((para, i) => (
+                  <div key={i} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                    <div style={{ width: '2px', flexShrink: 0, alignSelf: 'stretch', borderRadius: '2px', background: i === 0 ? 'var(--gold)' : 'var(--border)' }} />
+                    <p className="font-reading" style={{ color: 'var(--ink)', fontSize: '16px', lineHeight: 1.72 }}>{para}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import PageHeader from '@/components/PageHeader'
 
 interface Membership { role: string; groups: { id: string; name: string; leader_id: string } }
 interface Member { role: string; profiles: { id: string; full_name: string } }
@@ -11,7 +12,6 @@ interface Props {
   members: Member[]
 }
 
-// Placeholder events — leader will fill these in via Supabase or future admin screen
 const PLACEHOLDER_EVENTS = [
   { date: 'Jun 22', label: 'Group meeting', note: '7:00 PM — Living room' },
   { date: 'Jun 29', label: 'Group meeting', note: '7:00 PM — Living room' },
@@ -22,88 +22,79 @@ const PLACEHOLDER_EVENTS = [
 
 export default function GroupClient({ memberships, members }: Props) {
   const [tab, setTab] = useState<'calendar' | 'members'>('calendar')
-
   const group = memberships[0]?.groups
 
   return (
     <div>
-      {/* Group header */}
-      <div className="px-5 pt-10 pb-5 relative overflow-hidden" style={{ background: 'linear-gradient(160deg, var(--sage-light) 0%, var(--surface) 60%)' }}>
-        <div className="absolute top-0 left-0 right-0 h-0.5" style={{ backgroundColor: 'var(--sage)' }} />
-        <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--sage)' }}>Your group</p>
-        <h1 className="page-title">{group?.name ?? 'Discipleship Group'}</h1>
-        <span className="page-title-rule" style={{ background: 'var(--sage)' }} />
-      </div>
-      <div className="px-5 pt-4">
+      <PageHeader
+        label="Your group"
+        title={group?.name ?? 'Discipleship Group'}
+        subtitle={group ? undefined : "You'll be added to a group by your leader soon."}
+        glowColor="rgba(92,122,96,0.22)"
+      />
 
-      {!group && (
-        <div className="rounded-xl p-5 mb-5 mt-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-          <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
-            You're not in a group yet. Your leader will add you. Check back soon.
-          </p>
-        </div>
-      )}
+      <div style={{ background: 'var(--paper)', borderRadius: '24px 24px 0 0', marginTop: '-20px', position: 'relative', zIndex: 1, padding: '1.5rem 1.125rem 2rem' }}>
 
-      {/* Tabs */}
-      <div className="flex gap-2 mb-5 mt-4">
-        {(['calendar', 'members'] as const).map(t => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className="px-4 py-2 rounded-lg text-sm font-semibold"
-            style={{
-              backgroundColor: tab === t ? 'var(--terracotta)' : 'var(--surface)',
-              color: tab === t ? '#fff' : 'var(--ink-soft)',
-              border: '1px solid var(--border)',
-            }}
-          >
-            {t === 'calendar' ? 'Calendar' : 'Members'}
-          </button>
-        ))}
-      </div>
-
-      {tab === 'calendar' && (
-        <div className="flex flex-col gap-3">
-          {PLACEHOLDER_EVENTS.map((e, i) => (
-            <div key={i} className="flex items-center gap-4 rounded-xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
-              <div className="flex-shrink-0 w-12 text-center">
-                <p className="text-xs font-semibold" style={{ color: 'var(--terracotta)' }}>{e.date.split(' ')[0]}</p>
-                <p className="text-xl font-bold leading-tight" style={{ color: 'var(--ink)' }}>{e.date.split(' ')[1]}</p>
-              </div>
-              <div>
-                <p className="font-semibold text-sm" style={{ color: 'var(--ink)' }}>{e.label}</p>
-                <p className="text-xs mt-0.5" style={{ color: 'var(--ink-soft)' }}>{e.note}</p>
-              </div>
-            </div>
+        {/* Segmented control */}
+        <div className="seg-control" style={{ marginBottom: '1.25rem' }}>
+          {(['calendar', 'members'] as const).map(t => (
+            <button key={t} className={`seg-tab${tab === t ? ' active' : ''}`} onClick={() => setTab(t)}>
+              {t === 'calendar' ? 'Calendar' : 'Members'}
+            </button>
           ))}
-          <p className="text-xs text-center mt-2" style={{ color: 'var(--ink-soft)' }}>
-            Your leader can update these dates — more coming soon.
-          </p>
         </div>
-      )}
 
-      {tab === 'members' && (
-        <div className="flex flex-col gap-3">
-          {members.length === 0 ? (
-            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>No members yet.</p>
-          ) : (
-            members.map((m, i) => (
-              <div key={i} className="flex items-center gap-3 rounded-xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
-                <div
-                  className="w-9 h-9 rounded-lg flex items-center justify-center font-semibold text-sm flex-shrink-0"
-                  style={{ backgroundColor: 'var(--sage)', color: '#fff' }}
-                >
-                  {(m.profiles?.full_name ?? '?')[0]}
+        {tab === 'calendar' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {PLACEHOLDER_EVENTS.map((e, i) => (
+              <div key={i} className="glass" style={{ borderRadius: '16px', padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div style={{ flexShrink: 0, width: '48px', textAlign: 'center' }}>
+                  <p style={{ fontSize: '10px', fontWeight: 700, color: 'var(--terracotta)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    {e.date.split(' ')[0]}
+                  </p>
+                  <p style={{ fontSize: '26px', fontWeight: 700, color: 'var(--ink)', lineHeight: 1.1, fontFamily: 'Newsreader, Georgia, serif' }}>
+                    {e.date.split(' ')[1]}
+                  </p>
                 </div>
+                <div style={{ width: '1px', alignSelf: 'stretch', background: 'var(--border)', flexShrink: 0 }} />
                 <div>
-                  <p className="font-semibold text-sm" style={{ color: 'var(--ink)' }}>{m.profiles?.full_name ?? 'Member'}</p>
-                  <p className="text-xs" style={{ color: 'var(--sage)' }}>{m.role === 'leader' ? 'Leader' : 'Member'}</p>
+                  <p style={{ fontWeight: 600, fontSize: '14px', color: 'var(--ink)' }}>{e.label}</p>
+                  <p style={{ fontSize: '12px', color: 'var(--ink-muted)', marginTop: '2px' }}>{e.note}</p>
                 </div>
               </div>
-            ))
-          )}
-        </div>
-      )}
+            ))}
+            <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--ink-muted)', marginTop: '4px' }}>
+              Your leader can update these dates.
+            </p>
+          </div>
+        )}
+
+        {tab === 'members' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {members.length === 0 ? (
+              <p style={{ color: 'var(--ink-muted)', fontSize: '14px' }}>No members yet.</p>
+            ) : (
+              members.map((m, i) => (
+                <div key={i} className="glass" style={{ borderRadius: '16px', padding: '0.875rem 1.25rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{
+                    width: '40px', height: '40px', borderRadius: '12px', flexShrink: 0,
+                    background: 'linear-gradient(135deg, var(--sage) 0%, var(--slate) 100%)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: '#fff', fontWeight: 700, fontSize: '16px',
+                  }}>
+                    {(m.profiles?.full_name ?? '?')[0]}
+                  </div>
+                  <div>
+                    <p style={{ fontWeight: 600, fontSize: '14px', color: 'var(--ink)' }}>{m.profiles?.full_name ?? 'Member'}</p>
+                    <p style={{ fontSize: '12px', color: m.role === 'leader' ? 'var(--terracotta)' : 'var(--ink-muted)', fontWeight: 500 }}>
+                      {m.role === 'leader' ? 'Leader' : 'Member'}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

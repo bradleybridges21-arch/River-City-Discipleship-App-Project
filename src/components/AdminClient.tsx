@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { TEACHING_LIBRARY, THEMES, type LibraryTeaching } from '@/lib/teaching-library'
+import PageHeader from '@/components/PageHeader'
 
 interface Group { id: string; name: string; created_at: string }
 interface Teaching { id: string; week_label: string; question: string; group_id: string; created_at: string }
@@ -143,382 +144,248 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
   const membersByGroup = (groupId: string) =>
     memberships.filter(m => m.group_id === groupId)
 
+  const inputStyle = { width: '100%', borderRadius: '10px', padding: '12px', fontSize: '14px', outline: 'none', border: '1px solid rgba(255,255,255,0.8)', background: 'rgba(255,255,255,0.6)', color: 'var(--ink)', fontFamily: 'inherit' }
+
   const field = (label: string, value: string, onChange: (v: string) => void, opts?: { multiline?: boolean; placeholder?: string }) => (
     <div>
-      <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--ink-soft)' }}>{label}</label>
+      <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-muted)', marginBottom: '6px' }}>{label}</label>
       {opts?.multiline ? (
-        <textarea
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          rows={3}
-          placeholder={opts.placeholder}
-          className="w-full rounded-xl px-4 py-3 text-sm resize-none outline-none"
-          style={{ backgroundColor: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--ink)' }}
-        />
+        <textarea value={value} onChange={e => onChange(e.target.value)} rows={3} placeholder={opts.placeholder} style={{ ...inputStyle, resize: 'none' }} />
       ) : (
-        <input
-          type="text"
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          placeholder={opts?.placeholder}
-          className="w-full rounded-xl px-4 py-3 text-sm outline-none"
-          style={{ backgroundColor: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--ink)' }}
-        />
+        <input type="text" value={value} onChange={e => onChange(e.target.value)} placeholder={opts?.placeholder} style={inputStyle} />
       )}
     </div>
   )
 
+  const card = (children: React.ReactNode, accent?: string) => (
+    <div className="glass" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+      {accent && <div style={{ height: '2px', background: accent }} />}
+      <div style={{ padding: '1.125rem' }}>{children}</div>
+    </div>
+  )
+
   return (
-    <div className="px-5 pt-10">
-      <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--terracotta)' }}>Leader</p>
-      <h1 className="page-title">Admin</h1>
-      <span className="page-title-rule mb-4" />
-      <p className="text-sm mt-3 mb-5" style={{ color: 'var(--ink-soft)' }}>Manage your groups, teachings, and members.</p>
+    <div>
+      <PageHeader label="Leader" title="Admin" subtitle="Manage your groups, teachings, and members." glowColor="rgba(184,92,58,0.22)" />
 
-      {/* Tabs */}
-      <div className="flex gap-2 mb-6 flex-wrap">
-        {([
-          ['overview', 'Overview'],
-          ['groups', 'Groups'],
-          ['teaching', 'Teaching'],
-          ['responses', 'Responses'],
-        ] as const).map(([key, label]) => (
-          <button
-            key={key}
-            onClick={() => setTab(key)}
-            className="px-4 py-2 rounded-lg text-sm font-semibold"
-            style={{
-              backgroundColor: tab === key ? 'var(--terracotta)' : 'var(--surface)',
-              color: tab === key ? '#fff' : 'var(--ink-soft)',
-              border: '1px solid var(--border)',
-            }}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <div style={{ background: 'var(--paper)', borderRadius: '24px 24px 0 0', marginTop: '-20px', position: 'relative', zIndex: 1, padding: '1.5rem 1.125rem 2rem' }}>
 
-      {/* Overview */}
-      {tab === 'overview' && (
-        <div className="flex flex-col gap-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl p-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-              <p className="text-3xl font-bold" style={{ color: 'var(--ink)' }}>{groups.length}</p>
-              <p className="text-xs font-medium mt-1" style={{ color: 'var(--ink-soft)' }}>{groups.length === 1 ? 'Group' : 'Groups'}</p>
-            </div>
-            <div className="rounded-xl p-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-              <p className="text-3xl font-bold" style={{ color: 'var(--ink)' }}>{memberships.length}</p>
-              <p className="text-xs font-medium mt-1" style={{ color: 'var(--ink-soft)' }}>Members</p>
-            </div>
-            <div className="rounded-xl p-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-              <p className="text-3xl font-bold" style={{ color: 'var(--ink)' }}>{teachings.length}</p>
-              <p className="text-xs font-medium mt-1" style={{ color: 'var(--ink-soft)' }}>Teachings</p>
-            </div>
-            <div className="rounded-xl p-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-              <p className="text-3xl font-bold" style={{ color: 'var(--ink)' }}>{responses.length}</p>
-              <p className="text-xs font-medium mt-1" style={{ color: 'var(--ink-soft)' }}>Responses</p>
-            </div>
-          </div>
-
-          {latestTeaching && (
-            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-              <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--sage)' }}>Latest teaching</p>
-              <p className="font-semibold" style={{ color: 'var(--ink)' }}>{latestTeaching.week_label}</p>
-              <p className="text-sm mt-1" style={{ color: 'var(--ink-soft)' }}>{latestTeaching.question}</p>
-              <p className="text-xs mt-2" style={{ color: 'var(--sage)' }}>{responses.length} response{responses.length !== 1 ? 's' : ''} so far</p>
-            </div>
-          )}
-
-          <button
-            onClick={() => setTab('teaching')}
-            className="w-full py-3 rounded-xl font-semibold text-sm"
-            style={{ backgroundColor: 'var(--terracotta)', color: '#fff' }}
-          >
-            Post this week's teaching
-          </button>
+        {/* iOS segmented control */}
+        <div className="seg-control" style={{ marginBottom: '1.25rem' }}>
+          {([['overview', 'Overview'], ['groups', 'Groups'], ['teaching', 'Teaching'], ['responses', 'Responses']] as const).map(([key, label]) => (
+            <button key={key} className={`seg-tab${tab === key ? ' active' : ''}`} onClick={() => setTab(key)}>{label}</button>
+          ))}
         </div>
-      )}
 
-      {/* Groups */}
-      {tab === 'groups' && (
-        <div className="flex flex-col gap-5">
-          {/* Create group */}
-          <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-            <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--sage)' }}>Create a group</p>
-            <input
-              type="text"
-              value={newGroupName}
-              onChange={e => setNewGroupName(e.target.value)}
-              placeholder="e.g. River City Men's Group"
-              className="w-full rounded-xl px-4 py-3 text-sm outline-none mb-3"
-              style={{ backgroundColor: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--ink)' }}
-            />
-            {groupCreated && <p className="text-xs mb-2" style={{ color: 'var(--sage)' }}>"{groupCreated}" created.</p>}
-            {groupError && <p className="text-xs mb-2" style={{ color: 'var(--terracotta)' }}>{groupError}</p>}
-            <button
-              onClick={createGroup}
-              disabled={creatingGroup || !newGroupName.trim()}
-              className="px-5 py-2 rounded-xl text-sm font-semibold"
-              style={{ backgroundColor: 'var(--terracotta)', color: '#fff', opacity: creatingGroup || !newGroupName.trim() ? 0.5 : 1 }}
-            >
-              {creatingGroup ? 'Creating…' : 'Create group'}
+        {/* ── Overview ── */}
+        {tab === 'overview' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              {[
+                { n: groups.length, label: groups.length === 1 ? 'Group' : 'Groups', color: 'var(--terracotta)' },
+                { n: memberships.length, label: 'Members', color: 'var(--sage)' },
+                { n: teachings.length, label: 'Teachings', color: 'var(--slate)' },
+                { n: responses.length, label: 'Responses', color: 'var(--gold)' },
+              ].map(({ n, label, color }) => (
+                <div key={label} className="glass" style={{ borderRadius: '16px', padding: '1rem' }}>
+                  <p style={{ fontFamily: 'Newsreader, Georgia, serif', fontSize: '2.25rem', fontWeight: 500, color, lineHeight: 1 }}>{n}</p>
+                  <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink-muted)', marginTop: '4px' }}>{label}</p>
+                </div>
+              ))}
+            </div>
+
+            {latestTeaching && card(
+              <>
+                <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: '6px' }}>Latest teaching</p>
+                <p style={{ fontWeight: 600, fontSize: '14px', color: 'var(--ink)' }}>{latestTeaching.week_label}</p>
+                <p style={{ fontSize: '13px', color: 'var(--ink-muted)', marginTop: '4px' }}>{latestTeaching.question}</p>
+                <p style={{ fontSize: '12px', color: 'var(--sage)', fontWeight: 600, marginTop: '8px' }}>{responses.length} response{responses.length !== 1 ? 's' : ''} so far</p>
+              </>, 'var(--sage)'
+            )}
+
+            <button onClick={() => setTab('teaching')} className="btn-primary" style={{ width: '100%', textAlign: 'center' }}>
+              Post this week's teaching
             </button>
           </div>
+        )}
 
-          {/* Add member */}
-          {groups.length > 0 && (
-            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-              <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--sage)' }}>Add a member</p>
-              <div className="flex flex-col gap-3">
-                <div>
-                  <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--ink-soft)' }}>Group</label>
-                  <select
-                    value={selectedGroupId}
-                    onChange={e => setSelectedGroupId(e.target.value)}
-                    className="w-full rounded-xl px-4 py-3 text-sm outline-none"
-                    style={{ backgroundColor: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--ink)' }}
-                  >
-                    {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--ink-soft)' }}>Member's email</label>
-                  <input
-                    type="email"
-                    value={inviteEmail}
-                    onChange={e => setInviteEmail(e.target.value)}
-                    placeholder="their@email.com"
-                    className="w-full rounded-xl px-4 py-3 text-sm outline-none"
-                    style={{ backgroundColor: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--ink)' }}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--ink-soft)' }}>Role</label>
-                  <div className="flex gap-2">
+        {/* ── Groups ── */}
+        {tab === 'groups' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {card(
+              <>
+                <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: '10px' }}>Create a group</p>
+                <input type="text" value={newGroupName} onChange={e => setNewGroupName(e.target.value)} placeholder="e.g. River City Men's Group" style={{ ...inputStyle, marginBottom: '10px' }} />
+                {groupCreated && <p style={{ fontSize: '12px', color: 'var(--sage)', marginBottom: '8px' }}>"{groupCreated}" created.</p>}
+                {groupError && <p style={{ fontSize: '12px', color: 'var(--terracotta)', marginBottom: '8px' }}>{groupError}</p>}
+                <button onClick={createGroup} disabled={creatingGroup || !newGroupName.trim()} className="btn-primary" style={{ opacity: creatingGroup || !newGroupName.trim() ? 0.45 : 1 }}>
+                  {creatingGroup ? 'Creating…' : 'Create group'}
+                </button>
+              </>, 'var(--terracotta)'
+            )}
+
+            {groups.length > 0 && card(
+              <>
+                <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: '12px' }}>Add a member</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'var(--ink-muted)', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Group</label>
+                    <select value={selectedGroupId} onChange={e => setSelectedGroupId(e.target.value)} style={inputStyle}>
+                      {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'var(--ink-muted)', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Member's email</label>
+                    <input type="email" value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} placeholder="their@email.com" style={inputStyle} />
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
                     {(['member', 'leader'] as const).map(r => (
-                      <button
-                        key={r}
-                        onClick={() => setInviteRole(r)}
-                        className="flex-1 py-2 rounded-xl text-sm font-semibold"
-                        style={{
-                          backgroundColor: inviteRole === r ? 'var(--ink)' : 'var(--paper)',
-                          color: inviteRole === r ? '#fff' : 'var(--ink-soft)',
-                          border: '1px solid var(--border)',
-                        }}
-                      >
+                      <button key={r} onClick={() => setInviteRole(r)} style={{ flex: 1, padding: '10px', borderRadius: '10px', fontSize: '13px', fontWeight: 600, background: inviteRole === r ? 'var(--ink)' : 'rgba(255,255,255,0.6)', color: inviteRole === r ? '#fff' : 'var(--ink-muted)', border: inviteRole === r ? 'none' : '1px solid rgba(255,255,255,0.8)', cursor: 'pointer' }}>
                         {r.charAt(0).toUpperCase() + r.slice(1)}
                       </button>
                     ))}
                   </div>
-                </div>
-                {inviteMsg && <p className="text-xs" style={{ color: inviteMsg.includes('added') ? 'var(--sage)' : 'var(--terracotta)' }}>{inviteMsg}</p>}
-                <button
-                  onClick={inviteMember}
-                  disabled={inviting || !inviteEmail.trim()}
-                  className="py-3 rounded-xl text-sm font-semibold"
-                  style={{ backgroundColor: 'var(--sage)', color: '#fff', opacity: inviting || !inviteEmail.trim() ? 0.5 : 1 }}
-                >
-                  {inviting ? 'Adding…' : 'Add to group'}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Existing groups */}
-          {groups.map(g => (
-            <div key={g.id} className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-              <p className="font-semibold mb-3" style={{ color: 'var(--ink)' }}>{g.name}</p>
-              {membersByGroup(g.id).length === 0 ? (
-                <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>No members yet.</p>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  {membersByGroup(g.id).map((m, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <div
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold flex-shrink-0"
-                        style={{ backgroundColor: m.role === 'leader' ? 'var(--terracotta)' : 'var(--sage)', color: '#fff' }}
-                      >
-                        {(m.profiles?.full_name ?? '?')[0]}
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium" style={{ color: 'var(--ink)' }}>{m.profiles?.full_name ?? 'Member'}</p>
-                        <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>{m.role}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Teaching */}
-      {tab === 'teaching' && (
-        <div className="flex flex-col gap-5">
-          {groups.length === 0 ? (
-            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-              <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Create a group first before posting a teaching.</p>
-            </div>
-          ) : (
-            <>
-              {/* ── Teaching library ── */}
-              <div>
-                <div className="flex items-center gap-3 mb-4">
-                  <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--sage)' }}>Teaching library</p>
-                  <div className="flex-1 h-px" style={{ backgroundColor: 'var(--border)' }} />
-                </div>
-                <p className="text-xs mb-4" style={{ color: 'var(--ink-soft)' }}>
-                  Choose a teaching to post as-is, or use it as a starting point and edit the form below.
-                </p>
-
-                {/* Theme filter */}
-                <div className="flex gap-2 flex-wrap mb-4">
-                  <button
-                    onClick={() => setLibraryTheme('All')}
-                    className="px-3 py-1 rounded-lg text-xs font-semibold"
-                    style={{
-                      backgroundColor: libraryTheme === 'All' ? 'var(--ink)' : 'var(--surface)',
-                      color: libraryTheme === 'All' ? '#fff' : 'var(--ink-soft)',
-                      border: '1px solid var(--border)',
-                    }}
-                  >
-                    All
+                  {inviteMsg && <p style={{ fontSize: '12px', color: 'var(--ink-muted)', lineHeight: 1.5 }}>{inviteMsg}</p>}
+                  <button onClick={inviteMember} disabled={inviting || !inviteEmail.trim()} className="btn-primary" style={{ background: 'var(--sage)', boxShadow: '0 2px 8px rgba(92,122,96,0.30)', opacity: inviting || !inviteEmail.trim() ? 0.45 : 1 }}>
+                    {inviting ? 'Adding…' : 'Add to group'}
                   </button>
-                  {THEMES.map(theme => (
-                    <button
-                      key={theme}
-                      onClick={() => setLibraryTheme(theme)}
-                      className="px-3 py-1 rounded-lg text-xs font-semibold"
-                      style={{
-                        backgroundColor: libraryTheme === theme ? 'var(--ink)' : 'var(--surface)',
-                        color: libraryTheme === theme ? '#fff' : 'var(--ink-soft)',
-                        border: '1px solid var(--border)',
-                      }}
-                    >
-                      {theme}
-                    </button>
-                  ))}
                 </div>
+              </>, 'var(--sage)'
+            )}
 
-                <div className="flex flex-col gap-3">
-                  {TEACHING_LIBRARY
-                    .filter(t => libraryTheme === 'All' || t.theme === libraryTheme)
-                    .map(t => (
-                      <div
-                        key={t.id}
-                        className="rounded-xl p-4"
-                        style={{
-                          backgroundColor: 'var(--surface)',
-                          border: selectedLibraryId === t.id ? '1.5px solid var(--terracotta)' : '1px solid var(--border)',
-                        }}
-                      >
-                        <div className="flex items-start justify-between gap-3 mb-2">
-                          <div>
-                            <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: 'var(--sage)' }}>{t.theme}</p>
-                            <p className="font-semibold text-sm" style={{ color: 'var(--ink)' }}>{t.week_label}</p>
-                          </div>
-                          <button
-                            onClick={() => loadLibraryTeaching(t)}
-                            className="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold"
-                            style={{ backgroundColor: 'var(--terracotta)', color: '#fff' }}
-                          >
-                            Use this
-                          </button>
+            {groups.map(g => card(
+              <>
+                <p style={{ fontWeight: 700, fontSize: '14px', color: 'var(--ink)', marginBottom: '10px' }}>{g.name}</p>
+                {membersByGroup(g.id).length === 0 ? (
+                  <p style={{ fontSize: '13px', color: 'var(--ink-muted)' }}>No members yet.</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {membersByGroup(g.id).map((m, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ width: '32px', height: '32px', borderRadius: '9px', flexShrink: 0, background: m.role === 'leader' ? 'var(--terracotta)' : 'var(--sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '13px' }}>
+                          {(m.profiles?.full_name ?? '?')[0]}
                         </div>
-                        <p className="text-xs leading-relaxed line-clamp-2" style={{ color: 'var(--ink-soft)' }}>{t.hook}</p>
+                        <div>
+                          <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)' }}>{m.profiles?.full_name ?? 'Member'}</p>
+                          <p style={{ fontSize: '11px', color: 'var(--ink-muted)' }}>{m.role}</p>
+                        </div>
                       </div>
                     ))}
-                </div>
-              </div>
-
-              {/* ── Manual / edit form ── */}
-              <div id="teaching-form" className="rounded-xl p-5 flex flex-col gap-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-                <div className="flex items-center gap-3">
-                  <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--sage)' }}>
-                    {selectedLibraryId ? 'Edit & post' : 'Write your own'}
-                  </p>
-                  <div className="flex-1 h-px" style={{ backgroundColor: 'var(--border)' }} />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--ink-soft)' }}>Group</label>
-                  <select
-                    value={teachingGroupId}
-                    onChange={e => setTeachingGroupId(e.target.value)}
-                    className="w-full rounded-xl px-4 py-3 text-sm outline-none"
-                    style={{ backgroundColor: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--ink)' }}
-                  >
-                    {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
-                  </select>
-                </div>
-
-                {field('Week label', weekLabel, setWeekLabel, { placeholder: 'e.g. Week 1 · The Kingdom' })}
-                {field('Hook / opening thought', hook, setHook, { multiline: true, placeholder: 'The opening idea or story that frames the week…' })}
-                {field('Scripture reference', scriptureRef, setScriptureRef, { placeholder: 'e.g. Matthew 5:1–12' })}
-                {field('Application', application, setApplication, { multiline: true, placeholder: 'What does this mean for how we live this week?' })}
-                {field('Discussion question', question, setQuestion, { multiline: true, placeholder: 'The question members will respond to…' })}
-
-                {teachingPosted && <p className="text-sm font-medium" style={{ color: 'var(--sage)' }}>Teaching posted. Members can see it now.</p>}
-
-                <button
-                  onClick={postTeaching}
-                  disabled={postingTeaching || !hook.trim() || !scriptureRef.trim() || !question.trim() || !weekLabel.trim()}
-                  className="py-3 rounded-xl font-semibold text-sm"
-                  style={{ backgroundColor: 'var(--terracotta)', color: '#fff', opacity: postingTeaching ? 0.6 : 1 }}
-                >
-                  {postingTeaching ? 'Posting…' : 'Post teaching'}
-                </button>
-              </div>
-            </>
-          )}
-
-          {teachings.length > 0 && (
-            <div className="flex flex-col gap-3">
-              <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--ink-soft)' }}>Past teachings</p>
-              {teachings.map(t => (
-                <div key={t.id} className="rounded-xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-                  <p className="font-semibold text-sm" style={{ color: 'var(--ink)' }}>{t.week_label}</p>
-                  <p className="text-xs mt-1" style={{ color: 'var(--ink-soft)' }}>{t.question}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Responses */}
-      {tab === 'responses' && (
-        <div className="flex flex-col gap-4">
-          {!latestTeaching ? (
-            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-              <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>No teachings posted yet. Post a teaching to see responses here.</p>
-            </div>
-          ) : (
-            <>
-              <div className="rounded-xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-                <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: 'var(--sage)' }}>Responding to</p>
-                <p className="font-semibold text-sm" style={{ color: 'var(--ink)' }}>{latestTeaching.week_label}</p>
-                <p className="text-xs mt-1" style={{ color: 'var(--ink-soft)' }}>{latestTeaching.question}</p>
-              </div>
-
-              {responses.length === 0 ? (
-                <p className="text-sm text-center py-4" style={{ color: 'var(--ink-soft)' }}>No responses yet.</p>
-              ) : (
-                responses.map(r => (
-                  <div key={r.id} className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-                    <p className="text-xs font-semibold mb-2" style={{ color: 'var(--terracotta)' }}>{r.profiles?.full_name ?? 'Member'}</p>
-                    <p className="text-sm leading-relaxed" style={{ color: 'var(--ink)' }}>{r.body}</p>
-                    <p className="text-xs mt-2" style={{ color: 'var(--sage)' }}>
-                      {new Date(r.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
-                    </p>
                   </div>
-                ))
-              )}
-            </>
-          )}
-        </div>
-      )}
+                )}
+              </>
+            ))}
+          </div>
+        )}
+
+        {/* ── Teaching ── */}
+        {tab === 'teaching' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {groups.length === 0 ? (
+              card(<p style={{ fontSize: '14px', color: 'var(--ink-muted)' }}>Create a group first before posting a teaching.</p>)
+            ) : (
+              <>
+                {/* Teaching library */}
+                {card(
+                  <>
+                    <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: '8px' }}>Teaching library</p>
+                    <p style={{ fontSize: '12px', color: 'var(--ink-muted)', marginBottom: '12px' }}>Choose a teaching to post, or edit the form below.</p>
+                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                      {['All', ...THEMES].map(theme => (
+                        <button key={theme} onClick={() => setLibraryTheme(theme)} style={{ padding: '5px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 600, background: libraryTheme === theme ? 'var(--ink)' : 'rgba(255,255,255,0.6)', color: libraryTheme === theme ? '#fff' : 'var(--ink-muted)', border: libraryTheme === theme ? 'none' : '1px solid rgba(255,255,255,0.8)', cursor: 'pointer' }}>
+                          {theme}
+                        </button>
+                      ))}
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {TEACHING_LIBRARY.filter(t => libraryTheme === 'All' || t.theme === libraryTheme).map(t => (
+                        <div key={t.id} style={{ padding: '12px', borderRadius: '12px', background: selectedLibraryId === t.id ? 'rgba(184,92,58,0.08)' : 'rgba(255,255,255,0.5)', border: selectedLibraryId === t.id ? '1.5px solid var(--terracotta)' : '1px solid rgba(255,255,255,0.8)' }}>
+                          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '10px', marginBottom: '6px' }}>
+                            <div>
+                              <p style={{ fontSize: '10px', fontWeight: 700, color: 'var(--sage)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '2px' }}>{t.theme}</p>
+                              <p style={{ fontWeight: 600, fontSize: '13px', color: 'var(--ink)' }}>{t.week_label}</p>
+                            </div>
+                            <button onClick={() => loadLibraryTeaching(t)} className="btn-primary" style={{ fontSize: '11px', padding: '6px 12px', flexShrink: 0 }}>Use this</button>
+                          </div>
+                          <p style={{ fontSize: '12px', color: 'var(--ink-muted)', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{t.hook}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </>, 'var(--slate)'
+                )}
+
+                {/* Teaching form */}
+                {card(
+                  <div id="teaching-form" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--sage)' }}>
+                      {selectedLibraryId ? 'Edit & post' : 'Write your own'}
+                    </p>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'var(--ink-muted)', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Group</label>
+                      <select value={teachingGroupId} onChange={e => setTeachingGroupId(e.target.value)} style={inputStyle}>
+                        {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+                      </select>
+                    </div>
+                    {field('Week label', weekLabel, setWeekLabel, { placeholder: 'e.g. Week 1 · The Kingdom' })}
+                    {field('Hook / opening thought', hook, setHook, { multiline: true, placeholder: 'The opening idea or story…' })}
+                    {field('Scripture reference', scriptureRef, setScriptureRef, { placeholder: 'e.g. Matthew 5:1–12' })}
+                    {field('Application', application, setApplication, { multiline: true, placeholder: 'What does this mean for how we live this week?' })}
+                    {field('Discussion question', question, setQuestion, { multiline: true, placeholder: 'The question members will respond to…' })}
+                    {teachingPosted && <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--sage)' }}>Teaching posted. Members can see it now.</p>}
+                    <button onClick={postTeaching} disabled={postingTeaching || !hook.trim() || !scriptureRef.trim() || !question.trim() || !weekLabel.trim()} className="btn-primary" style={{ opacity: postingTeaching ? 0.6 : 1 }}>
+                      {postingTeaching ? 'Posting…' : 'Post teaching'}
+                    </button>
+                  </div>, 'var(--terracotta)'
+                )}
+              </>
+            )}
+
+            {teachings.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--ink-muted)' }}>Past teachings</p>
+                {teachings.map(t => card(
+                  <>
+                    <p style={{ fontWeight: 600, fontSize: '14px', color: 'var(--ink)' }}>{t.week_label}</p>
+                    <p style={{ fontSize: '12px', color: 'var(--ink-muted)', marginTop: '4px' }}>{t.question}</p>
+                  </>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Responses ── */}
+        {tab === 'responses' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {!latestTeaching ? (
+              card(<p style={{ fontSize: '14px', color: 'var(--ink-muted)' }}>No teachings posted yet. Post a teaching to see responses here.</p>)
+            ) : (
+              <>
+                {card(
+                  <>
+                    <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: '6px' }}>Responding to</p>
+                    <p style={{ fontWeight: 600, fontSize: '14px', color: 'var(--ink)' }}>{latestTeaching.week_label}</p>
+                    <p style={{ fontSize: '13px', color: 'var(--ink-muted)', marginTop: '4px' }}>{latestTeaching.question}</p>
+                  </>, 'var(--sage)'
+                )}
+                {responses.length === 0 ? (
+                  <p style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--ink-muted)', fontSize: '14px' }}>No responses yet.</p>
+                ) : (
+                  responses.map(r => card(
+                    <>
+                      <p style={{ fontSize: '11px', fontWeight: 700, color: 'var(--terracotta)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{r.profiles?.full_name ?? 'Member'}</p>
+                      <p style={{ fontSize: '14px', lineHeight: 1.65, color: 'var(--ink)' }}>{r.body}</p>
+                      <p style={{ fontSize: '11px', color: 'var(--sage)', fontWeight: 600, marginTop: '8px' }}>
+                        {new Date(r.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
+                      </p>
+                    </>
+                  ))
+                )}
+              </>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

@@ -81,91 +81,127 @@ export default async function HomePage() {
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
   return (
-    <div style={{ backgroundColor: 'var(--paper)' }}>
-      {/* Header — layered on top of paper */}
-      <div className="px-5 pt-12 pb-6">
-        <div className="flex items-start justify-between">
+    <div>
+      {/* ── Dark hero section ─────────────────────────── */}
+      <div style={{
+        background: 'linear-gradient(170deg, var(--dark) 0%, var(--dark-2) 55%, var(--dark-3) 100%)',
+        position: 'relative',
+        overflow: 'hidden',
+        paddingTop: '3.5rem',
+        paddingBottom: '3rem',
+      }}>
+        {/* Terracotta glow — top right */}
+        <div style={{ position: 'absolute', top: '-20%', right: '-15%', width: '70%', paddingBottom: '70%', background: 'radial-gradient(circle, rgba(184,92,58,0.22) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        {/* Sage glow — bottom left */}
+        <div style={{ position: 'absolute', bottom: '-20%', left: '-10%', width: '55%', paddingBottom: '55%', background: 'radial-gradient(circle, rgba(92,122,96,0.14) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+        {/* Greeting row */}
+        <div style={{ padding: '0 1.25rem', position: 'relative', marginBottom: '1.5rem', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <div>
-            <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: 'var(--sage)' }}>
+            <p style={{ color: 'rgba(255,255,255,0.32)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '0.4rem' }}>
               River City Church
             </p>
-            <h1 className="page-title" style={{ fontSize: '1.85rem' }}>
+            <h1 className="page-title" style={{ fontSize: '2rem' }}>
               {greeting},<br />{firstName}.
             </h1>
           </div>
           <SignOutButton />
         </div>
+
+        {/* Glass prayer card */}
+        <div style={{ padding: '0 1.25rem', position: 'relative' }}>
+          <DailyPrayerBanner />
+        </div>
       </div>
 
-      {/* Daily prayer card — client component reads local time */}
-      <div className="mx-4 mb-6">
-        <DailyPrayerBanner />
-      </div>
+      {/* ── Paper sheet lifts up ──────────────────────── */}
+      <div style={{
+        background: 'var(--paper)',
+        borderRadius: '24px 24px 0 0',
+        marginTop: '-20px',
+        position: 'relative',
+        zIndex: 1,
+        paddingTop: '1.75rem',
+        paddingBottom: '2rem',
+      }}>
+        {/* Section label */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '0 1.25rem', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--ink-muted)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+            Explore
+          </p>
+          <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+        </div>
 
-      {/* Section label */}
-      <div className="flex items-center gap-3 px-5 mb-4">
-        <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--ink-muted)' }}>
-          Explore
-        </p>
-        <div className="flex-1 h-px" style={{ backgroundColor: 'var(--border)' }} />
-      </div>
-
-      {/* Nav cards — 2-col grid, colored backgrounds */}
-      <div className="grid grid-cols-2 gap-3 px-4 mb-5">
-        {NAV_CARDS.map(card => (
-          <a
-            key={card.href}
-            href={card.href}
-            className="flex flex-col gap-3 p-4 active:opacity-75 transition-opacity"
-            style={{
-              background: card.bg,
-              border: `1px solid ${card.border}`,
-              borderRadius: '12px',
-              boxShadow: 'var(--shadow-sm)',
-            }}
-          >
-            <div
-              className="w-9 h-9 flex items-center justify-center"
+        {/* Nav cards — glass-light, 2-col grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', padding: '0 1rem', marginBottom: '1rem' }}>
+          {NAV_CARDS.map(card => (
+            <a
+              key={card.href}
+              href={card.href}
               style={{
-                borderRadius: '8px',
-                backgroundColor: card.accent + '20',
-                color: card.accent,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+                padding: '1.125rem',
+                background: 'rgba(255,255,255,0.72)',
+                backdropFilter: 'blur(20px) saturate(160%)',
+                WebkitBackdropFilter: 'blur(20px) saturate(160%)',
+                border: '1px solid rgba(255,255,255,0.90)',
+                borderTop: `2.5px solid ${card.accent}`,
+                borderRadius: '16px',
+                boxShadow: '0 4px 20px rgba(30,27,22,0.07), inset 0 1px 0 rgba(255,255,255,1)',
+                textDecoration: 'none',
               }}
             >
-              {card.icon}
-            </div>
-            <div>
-              <p className="font-semibold text-sm leading-tight mb-0.5" style={{ color: 'var(--ink)' }}>{card.label}</p>
-              <p style={{ color: 'var(--ink-muted)', fontSize: '11px', lineHeight: 1.4 }}>{card.sub}</p>
-            </div>
-          </a>
-        ))}
-      </div>
+              <div style={{
+                width: '38px', height: '38px',
+                borderRadius: '10px',
+                background: card.accent + '18',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: card.accent,
+              }}>
+                {card.icon}
+              </div>
+              <div>
+                <p style={{ fontWeight: 700, fontSize: '14px', color: 'var(--ink)', lineHeight: 1.3 }}>{card.label}</p>
+                <p style={{ fontSize: '11px', color: 'var(--ink-muted)', marginTop: '2px', lineHeight: 1.4 }}>{card.sub}</p>
+              </div>
+            </a>
+          ))}
+        </div>
 
-      {/* This week — accent strip */}
-      <div className="px-4 pb-4">
-        <a
-          href="/learn"
-          className="flex items-center justify-between px-5 py-4 active:opacity-75 transition-opacity"
-          style={{
-            borderRadius: '12px',
-            background: 'linear-gradient(135deg, var(--terracotta-light) 0%, var(--surface) 100%)',
-            border: '1px solid #dfc0b0',
-            boxShadow: 'var(--shadow-sm)',
-          }}
-        >
-          <div>
-            <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: 'var(--terracotta)' }}>
-              This week
-            </p>
-            <p className="font-semibold text-sm leading-snug" style={{ color: 'var(--ink)' }}>
-              See the latest teaching and share your response
-            </p>
-          </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--terracotta)', flexShrink: 0, marginLeft: '12px' }}>
-            <path d="M9 18l6-6-6-6"/>
-          </svg>
-        </a>
+        {/* This week strip — glass */}
+        <div style={{ padding: '0 1rem' }}>
+          <a
+            href="/learn"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '1rem 1.25rem',
+              background: 'rgba(255,255,255,0.72)',
+              backdropFilter: 'blur(20px) saturate(160%)',
+              WebkitBackdropFilter: 'blur(20px) saturate(160%)',
+              border: '1px solid rgba(255,255,255,0.90)',
+              borderLeft: '3px solid var(--terracotta)',
+              borderRadius: '16px',
+              boxShadow: '0 4px 20px rgba(30,27,22,0.07), inset 0 1px 0 rgba(255,255,255,1)',
+              textDecoration: 'none',
+            }}
+          >
+            <div>
+              <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--terracotta)', marginBottom: '3px' }}>
+                This week
+              </p>
+              <p style={{ fontWeight: 600, fontSize: '14px', color: 'var(--ink)', lineHeight: 1.4 }}>
+                See the latest teaching and share your response
+              </p>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--terracotta)', flexShrink: 0, marginLeft: '12px' }}>
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </a>
+        </div>
       </div>
     </div>
   )

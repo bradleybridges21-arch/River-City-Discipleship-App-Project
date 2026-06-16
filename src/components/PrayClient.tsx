@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { DailyPrayer } from '@/lib/daily-prayers'
+import PageHeader from '@/components/PageHeader'
 
 interface GroupPrayer { id: string; body: string; created_at: string; profiles: { full_name: string } | null }
 interface JournalEntry { id: string; body: string; created_at: string }
@@ -19,25 +20,25 @@ type Tab = 'office' | 'group' | 'journal'
 const OFFICE_PRAYERS = [
   {
     label: 'Morning',
-    icon: null,
+    accent: 'var(--gold)',
     prayers: [
       { title: 'Opening', text: 'O Lord, open my lips, and my mouth will declare your praise.', ref: 'Psalm 51:15' },
-      { title: 'The Lord\'s Prayer', text: 'Our Father, who art in heaven, hallowed be thy name. Thy kingdom come, thy will be done, on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us. Lead us not into temptation, but deliver us from evil. For thine is the kingdom, and the power, and the glory, for ever and ever. Amen.', ref: 'Matthew 6:9–13' },
+      { title: "The Lord's Prayer", text: "Our Father, who art in heaven, hallowed be thy name. Thy kingdom come, thy will be done, on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us. Lead us not into temptation, but deliver us from evil. For thine is the kingdom, and the power, and the glory, for ever and ever. Amen.", ref: 'Matthew 6:9–13' },
       { title: 'Collect for Grace', text: 'O Lord our heavenly Father, Almighty and everlasting God, who hast safely brought us to the beginning of this day; Defend us in the same with thy mighty power; and grant that this day we fall into no sin, neither run into any kind of danger; but that all our doings may be ordered by thy governance, to do always that is righteous in thy sight; through Jesus Christ our Lord. Amen.', ref: 'Book of Common Prayer (1662)' },
     ],
   },
   {
     label: 'Midday',
-    icon: null,
+    accent: 'var(--sage)',
     prayers: [
       { title: 'Pause', text: 'Be still, and know that I am God.', ref: 'Psalm 46:10' },
-      { title: 'Midday Collect', text: 'Blessed Savior, at this hour you hung upon the cross, stretching out your loving arms. Grant that all the peoples of the earth may look to you and be saved; for your mercies\' sake. Amen.', ref: 'Book of Common Prayer' },
+      { title: 'Midday Collect', text: "Blessed Savior, at this hour you hung upon the cross, stretching out your loving arms. Grant that all the peoples of the earth may look to you and be saved; for your mercies' sake. Amen.", ref: 'Book of Common Prayer' },
       { title: 'Benediction', text: 'The grace of the Lord Jesus Christ and the love of God and the fellowship of the Holy Spirit be with you all.', ref: '2 Corinthians 13:14' },
     ],
   },
   {
     label: 'Evening',
-    icon: null,
+    accent: 'var(--slate)',
     prayers: [
       { title: 'Opening', text: 'Lord, now you are letting your servant depart in peace, according to your word; for my eyes have seen your salvation.', ref: 'Luke 2:29–30' },
       { title: 'Collect for Aid', text: 'Lighten our darkness, we beseech thee, O Lord; and by thy great mercy defend us from all perils and dangers of this night; for the love of thy only Son, our Savior Jesus Christ. Amen.', ref: 'Book of Common Prayer (1662)' },
@@ -46,7 +47,13 @@ const OFFICE_PRAYERS = [
   },
 ]
 
-export default function PrayClient({ userId, groupPrayers: initialPrayers, journalEntries: initialEntries, dailyPrayer }: Props) {
+const glowColors: Record<Tab, string> = {
+  office: 'rgba(176,120,48,0.22)',
+  group: 'rgba(92,122,96,0.22)',
+  journal: 'rgba(138,106,144,0.22)',
+}
+
+export default function PrayClient({ userId, groupPrayers: initialPrayers, journalEntries: initialEntries }: Props) {
   const supabase = createClient()
   const [tab, setTab] = useState<Tab>('office')
   const [officeSection, setOfficeSection] = useState(0)
@@ -90,152 +97,164 @@ export default function PrayClient({ userId, groupPrayers: initialPrayers, journ
     setSavingJournal(false)
   }
 
+  const tabLabels: [Tab, string][] = [['office', 'Daily Office'], ['group', 'Group Prayer'], ['journal', 'Inner Room']]
+
   return (
-    <div className="px-5 pt-10">
-      <h1 className="page-title">Prayer</h1>
-      <span className="page-title-rule mb-4" />
-      <p className="text-sm mt-3 mb-5" style={{ color: 'var(--ink-soft)' }}>The daily office, group requests, and your inner room.</p>
+    <div>
+      <PageHeader
+        title="Prayer"
+        subtitle="The daily office, group requests, and your inner room."
+        glowColor={glowColors[tab]}
+      />
 
-      {/* Daily prayer banner */}
-      <div className="rounded-xl px-5 py-5 mb-5 relative overflow-hidden" style={{
-        background: 'linear-gradient(135deg, var(--slate) 0%, #3d5a7a 100%)',
-        boxShadow: 'var(--shadow-md)',
+      {/* Paper content sheet */}
+      <div style={{
+        background: 'var(--paper)',
+        borderRadius: '24px 24px 0 0',
+        marginTop: '-20px',
+        position: 'relative',
+        zIndex: 1,
+        padding: '1.5rem 1.125rem 2rem',
       }}>
-        <div className="absolute inset-0 opacity-10" style={{ background: 'radial-gradient(circle at 80% 20%, #fff 0%, transparent 60%)' }} />
-        <p className="text-xs font-semibold tracking-widest uppercase mb-3 relative" style={{ color: 'rgba(255,255,255,0.6)' }}>
-          Today's prayer
-        </p>
-        <p className="font-reading italic leading-relaxed mb-3 relative" style={{ color: '#fff', fontSize: '15px' }}>
-          "{dailyPrayer.text}"
-        </p>
-        <p className="text-xs font-medium relative" style={{ color: 'rgba(255,255,255,0.6)' }}>— {dailyPrayer.attribution}</p>
-      </div>
+        {/* iOS segmented control */}
+        <div className="seg-control" style={{ marginBottom: '1.25rem' }}>
+          {tabLabels.map(([key, label]) => (
+            <button key={key} className={`seg-tab${tab === key ? ' active' : ''}`} onClick={() => setTab(key)}>
+              {label}
+            </button>
+          ))}
+        </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 mb-5">
-        {(['office', 'group', 'journal'] as Tab[]).map(t => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className="px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
-            style={{
-              backgroundColor: tab === t ? 'var(--terracotta)' : 'var(--surface)',
-              color: tab === t ? '#fff' : 'var(--ink-soft)',
-              border: '1px solid var(--border)',
-            }}
-          >
-            {t === 'office' ? 'Daily office' : t === 'group' ? 'Group prayer' : 'Inner room'}
-          </button>
-        ))}
-      </div>
+        {/* ── Daily office ── */}
+        {tab === 'office' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {/* Time-of-day sub-toggle */}
+            <div style={{ display: 'flex', gap: '6px', marginBottom: '4px' }}>
+              {OFFICE_PRAYERS.map((s, i) => (
+                <button
+                  key={s.label}
+                  onClick={() => setOfficeSection(i)}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    background: officeSection === i ? 'var(--ink)' : 'rgba(255,255,255,0.6)',
+                    color: officeSection === i ? '#fff' : 'var(--ink-muted)',
+                    border: officeSection === i ? 'none' : '1px solid rgba(255,255,255,0.8)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
 
-      {/* Daily office */}
-      {tab === 'office' && (
-        <div className="flex flex-col gap-4">
-          <div className="flex gap-2">
-            {OFFICE_PRAYERS.map((s, i) => (
-              <button
-                key={s.label}
-                onClick={() => setOfficeSection(i)}
-                className="px-4 py-1.5 rounded-lg text-xs font-semibold"
-                style={{
-                  backgroundColor: officeSection === i ? 'var(--ink)' : 'var(--surface)',
-                  color: officeSection === i ? '#fff' : 'var(--ink-soft)',
-                  border: '1px solid var(--border)',
-                }}
-              >
-                {s.label}
-              </button>
-            ))}
-          </div>
-          {section.prayers.map((p, i) => {
-            const topColors = ['var(--gold)', 'var(--sage)', 'var(--terracotta)']
-            return (
-              <div key={i} className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
-                <div className="h-0.5 w-full" style={{ backgroundColor: topColors[i % 3] }} />
-                <div className="p-5">
-                  <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: topColors[i % 3] }}>{p.title}</p>
-                  <p className="font-reading leading-relaxed mb-2" style={{ color: 'var(--ink)', fontSize: '16px' }}>{p.text}</p>
-                  <p className="text-xs font-medium" style={{ color: 'var(--ink-soft)' }}>{p.ref}</p>
+            {section.prayers.map((p, i) => (
+              <div key={i} className="glass" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+                <div style={{ height: '2px', background: section.accent }} />
+                <div style={{ padding: '1.125rem 1.25rem' }}>
+                  <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: section.accent, marginBottom: '0.625rem' }}>
+                    {p.title}
+                  </p>
+                  <p className="font-reading" style={{ color: 'var(--ink)', fontSize: '16px', lineHeight: 1.72, marginBottom: '0.625rem' }}>
+                    {p.text}
+                  </p>
+                  <p style={{ fontSize: '12px', color: 'var(--ink-muted)', fontWeight: 500 }}>{p.ref}</p>
                 </div>
               </div>
-            )
-          })}
-        </div>
-      )}
-
-      {/* Group prayer */}
-      {tab === 'group' && (
-        <div className="flex flex-col gap-4">
-          <div className="rounded-xl p-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
-            <textarea
-              value={prayerDraft}
-              onChange={e => setPrayerDraft(e.target.value)}
-              rows={3}
-              placeholder="Share a prayer request with your group…"
-              className="w-full rounded-xl px-4 py-3 text-sm resize-none outline-none"
-              style={{ backgroundColor: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--ink)' }}
-            />
-            <button
-              onClick={postPrayer}
-              disabled={posting || !prayerDraft.trim()}
-              className="mt-3 px-5 py-2 rounded-xl text-sm font-semibold"
-              style={{ backgroundColor: 'var(--sage)', color: '#fff', opacity: posting || !prayerDraft.trim() ? 0.5 : 1 }}
-            >
-              {posting ? 'Sharing…' : 'Share with group'}
-            </button>
+            ))}
           </div>
-          {prayers.length === 0 && (
-            <p className="text-sm text-center py-4" style={{ color: 'var(--ink-soft)' }}>No prayer requests yet. Be the first to share.</p>
-          )}
-          {prayers.map(p => (
-            <div key={p.id} className="rounded-xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--ink)' }}>{p.body}</p>
-              <p className="text-xs mt-2" style={{ color: 'var(--sage)' }}>
-                {p.profiles?.full_name ?? 'Someone'} · {new Date(p.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+        )}
 
-      {/* Inner room journal */}
-      {tab === 'journal' && (
-        <div className="flex flex-col gap-4">
-          <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
-            <div className="px-5 pt-5 pb-1" style={{ background: 'linear-gradient(135deg, var(--mauve-light) 0%, transparent 60%)' }}>
-            <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: 'var(--mauve)' }}>Inner room</p>
-            <p className="text-xs mb-3" style={{ color: 'var(--ink-soft)' }}>Private to you only. No one else can read this.</p>
+        {/* ── Group prayer ── */}
+        {tab === 'group' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div className="glass" style={{ borderRadius: '16px', padding: '1rem' }}>
+              <textarea
+                value={prayerDraft}
+                onChange={e => setPrayerDraft(e.target.value)}
+                rows={3}
+                placeholder="Share a prayer request with your group…"
+                style={{
+                  width: '100%', borderRadius: '10px', padding: '12px', fontSize: '14px',
+                  resize: 'none', outline: 'none', border: '1px solid rgba(255,255,255,0.8)',
+                  background: 'rgba(255,255,255,0.6)', color: 'var(--ink)', fontFamily: 'inherit',
+                }}
+              />
+              <button
+                onClick={postPrayer}
+                disabled={posting || !prayerDraft.trim()}
+                className="btn-primary"
+                style={{ marginTop: '10px' }}
+              >
+                {posting ? 'Sharing…' : 'Share with group'}
+              </button>
             </div>
-            <div className="px-5 pb-5">
-            <textarea
-              value={journalDraft}
-              onChange={e => setJournalDraft(e.target.value)}
-              rows={5}
-              placeholder="What is God stirring in you today?"
-              className="w-full rounded-xl px-4 py-3 resize-none outline-none font-reading"
-              style={{ backgroundColor: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--ink)', fontSize: '15px' }}
-            />
-            <button
-              onClick={saveJournal}
-              disabled={savingJournal || !journalDraft.trim()}
-              className="mt-3 px-5 py-2 rounded-xl text-sm font-semibold"
-              style={{ backgroundColor: 'var(--terracotta)', color: '#fff', opacity: savingJournal || !journalDraft.trim() ? 0.5 : 1 }}
-            >
-              {journalSaved ? 'Saved.' : savingJournal ? 'Saving…' : 'Save to inner room'}
-            </button>
-            </div>
-          </div>
-          {entries.map(e => (
-            <div key={e.id} className="rounded-xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-              <p className="font-reading leading-relaxed" style={{ color: 'var(--ink)', fontSize: '15px' }}>{e.body}</p>
-              <p className="text-xs mt-2" style={{ color: 'var(--sage)' }}>
-                {new Date(e.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
+
+            {prayers.length === 0 && (
+              <p style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--ink-muted)', fontSize: '14px' }}>
+                No prayer requests yet. Be the first to share.
               </p>
+            )}
+
+            {prayers.map(p => (
+              <div key={p.id} className="glass" style={{ borderRadius: '16px', padding: '1.125rem 1.25rem' }}>
+                <p style={{ fontSize: '15px', color: 'var(--ink)', lineHeight: 1.6 }}>{p.body}</p>
+                <p style={{ fontSize: '12px', color: 'var(--sage)', fontWeight: 600, marginTop: '8px' }}>
+                  {p.profiles?.full_name ?? 'Someone'} · {new Date(p.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── Inner room journal ── */}
+        {tab === 'journal' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div className="glass" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+              <div style={{ height: '2px', background: 'var(--mauve)' }} />
+              <div style={{ padding: '1.125rem 1.25rem' }}>
+                <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--mauve)', marginBottom: '4px' }}>
+                  Inner room
+                </p>
+                <p style={{ fontSize: '12px', color: 'var(--ink-muted)', marginBottom: '12px' }}>
+                  Private to you only. No one else can read this.
+                </p>
+                <textarea
+                  value={journalDraft}
+                  onChange={e => setJournalDraft(e.target.value)}
+                  rows={5}
+                  placeholder="What is God stirring in you today?"
+                  className="font-reading"
+                  style={{
+                    width: '100%', borderRadius: '10px', padding: '12px', fontSize: '15px',
+                    resize: 'none', outline: 'none', border: '1px solid rgba(255,255,255,0.8)',
+                    background: 'rgba(255,255,255,0.6)', color: 'var(--ink)',
+                  }}
+                />
+                <button
+                  onClick={saveJournal}
+                  disabled={savingJournal || !journalDraft.trim()}
+                  className="btn-primary"
+                  style={{ marginTop: '10px', background: 'var(--mauve)', boxShadow: '0 2px 8px rgba(138,106,144,0.30)' }}
+                >
+                  {journalSaved ? 'Saved.' : savingJournal ? 'Saving…' : 'Save to inner room'}
+                </button>
+              </div>
             </div>
-          ))}
-        </div>
-      )}
+
+            {entries.map(e => (
+              <div key={e.id} className="glass" style={{ borderRadius: '16px', padding: '1.125rem 1.25rem' }}>
+                <p className="font-reading" style={{ color: 'var(--ink)', fontSize: '15px', lineHeight: 1.7 }}>{e.body}</p>
+                <p style={{ fontSize: '12px', color: 'var(--mauve)', fontWeight: 600, marginTop: '8px' }}>
+                  {new Date(e.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import PageHeader from '@/components/PageHeader'
 
 const RESOURCES = [
   {
@@ -81,40 +82,40 @@ export default async function MorePage() {
   if (!user) redirect('/auth')
 
   return (
-    <div className="px-5 pt-10 pb-4">
-      <h1 className="page-title">Resources</h1>
-      <span className="page-title-rule mb-4" />
-      <p className="text-sm mb-8" style={{ color: 'var(--ink-soft)' }}>Tools for the walk and for knowing yourself.</p>
+    <div>
+      <PageHeader title="Resources" subtitle="Tools for the walk and for knowing yourself." glowColor="rgba(176,120,48,0.20)" />
 
-      <div className="flex flex-col gap-8">
+      <div style={{ background: 'var(--paper)', borderRadius: '24px 24px 0 0', marginTop: '-20px', position: 'relative', zIndex: 1, padding: '1.75rem 1.125rem 2rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         {RESOURCES.map(section => (
           <div key={section.category}>
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: section.accent }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+              <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: section.accent }}>
                 {section.category}
               </span>
-              <div className="flex-1 h-px" style={{ backgroundColor: 'var(--border)' }} />
+              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {section.items.map((item, i) => (
                 <a
                   key={i}
                   href={item.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-4 rounded-2xl px-5 py-4 active:opacity-70 transition-opacity"
-                  style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}
+                  className="glass"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '14px',
+                    padding: '1rem 1.125rem', borderRadius: '16px',
+                    textDecoration: 'none',
+                    borderLeft: `3px solid ${section.accent}`,
+                  }}
                 >
-                  <div className="w-0.5 self-stretch rounded-full flex-shrink-0" style={{ backgroundColor: section.accent }} />
-                  <div className="flex-shrink-0" style={{ color: section.accent }}>
-                    {item.icon}
+                  <div style={{ color: section.accent, flexShrink: 0 }}>{item.icon}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontWeight: 700, fontSize: '14px', color: 'var(--ink)' }}>{item.label}</p>
+                    <p style={{ fontSize: '12px', color: 'var(--ink-muted)', marginTop: '2px', lineHeight: 1.4 }}>{item.sub}</p>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm" style={{ color: 'var(--ink)' }}>{item.label}</p>
-                    <p className="text-xs mt-0.5 leading-relaxed" style={{ color: 'var(--ink-soft)' }}>{item.sub}</p>
-                  </div>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--border)', flexShrink: 0 }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--ink-muted)', flexShrink: 0 }}>
                     <path d="M7 17L17 7M7 7h10v10"/>
                   </svg>
                 </a>
