@@ -7,6 +7,7 @@ import { HYMNS, HYMN_CATEGORIES } from '@/lib/hymns'
 import { BIBLE_BOOKS, OT_SECTIONS, NT_SECTIONS } from '@/lib/bible-books'
 import { COUNTERFEITS, CAPSTONE } from '@/lib/true-blessing'
 import { TEACHING_LIBRARY } from '@/lib/teaching-library'
+import { PRAYER_QUESTIONS, QUESTION_CATEGORIES } from '@/lib/prayer-questions'
 import { HARD_WORDS, HARD_WORDS_INTRO } from '@/lib/hard-words'
 import { WORDS_NOT_IN_BIBLE, WORDS_INTRO } from '@/lib/words-not-in-bible'
 import { THREE_ENEMIES, DISCERNMENT_QUESTIONS, UNIFIED_RESPONSE, DISCERNMENT_INTRO } from '@/lib/discernment'
@@ -121,7 +122,8 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
   latestResponse: Response | null
 }) {
   const supabase = createClient()
-  const [tab, setTab] = useState<'teaching' | 'catechism' | 'creeds' | 'didache' | 'solas' | 'hymns' | 'bible' | 'blessing' | 'hardwords' | 'notinbible' | 'discernment'>('teaching')
+  const [tab, setTab] = useState<'teaching' | 'catechism' | 'creeds' | 'didache' | 'solas' | 'hymns' | 'bible' | 'blessing' | 'hardwords' | 'notinbible' | 'discernment' | 'questions'>('teaching')
+  const [qCategory, setQCategory] = useState<string>('all')
   const [expandedWord, setExpandedWord] = useState<string | null>(null)
   const [expandedBibleWord, setExpandedBibleWord] = useState<string | null>(null)
   const [expandedEnemy, setExpandedEnemy] = useState<string | null>(null)
@@ -193,6 +195,9 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
 
     ...THREE_ENEMIES.filter(e => [e.name, e.how_it_works, e.meaning, e.the_grace].some(v => v.toLowerCase().includes(q)))
       .map(e => ({ type: 'Flesh or Foe', title: e.name, subtitle: e.greek, body: e.how_it_works.slice(0, 180) + '…', tabKey: 'discernment', itemId: e.id })),
+
+    ...PRAYER_QUESTIONS.filter(pq => [pq.question, pq.context, pq.source].some(v => v.toLowerCase().includes(q)))
+      .map(pq => ({ type: 'Question', title: `"${pq.question}"`, subtitle: pq.source, body: pq.context.slice(0, 180) + '…', tabKey: 'questions', itemId: pq.id })),
   ]
 
   return (
@@ -222,7 +227,7 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
 
         {/* Scrollable pill tabs */}
         <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none', marginBottom: '1.25rem' }}>
-          {([['teaching', 'This Week'], ['catechism', 'Catechism'], ['creeds', 'Creeds'], ['didache', 'Didache'], ['solas', '5 Solas'], ['hymns', 'Hymns'], ['bible', 'Bible Books'], ['blessing', 'The Blessing'], ['hardwords', 'Hard Words'], ['notinbible', 'Not in the Bible'], ['discernment', 'Flesh or Foe?']] as const).map(([key, label]) => (
+          {([['teaching', 'This Week'], ['catechism', 'Catechism'], ['creeds', 'Creeds'], ['didache', 'Didache'], ['solas', '5 Solas'], ['hymns', 'Hymns'], ['bible', 'Bible Books'], ['blessing', 'The Blessing'], ['hardwords', 'Hard Words'], ['notinbible', 'Not in the Bible'], ['discernment', 'Flesh or Foe?'], ['questions', 'Questions']] as const).map(([key, label]) => (
             <button
               key={key}
               onClick={() => setTab(key)}
@@ -684,6 +689,37 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
             </div>
           </div>
         )}
+
+        {/* ── Questions ── */}
+        {!searchQuery.trim() && tab === 'questions' && (() => {
+          const filtered = qCategory === 'all' ? PRAYER_QUESTIONS : PRAYER_QUESTIONS.filter(q => q.category === qCategory)
+          return (
+            <div>
+              <p style={{ fontSize: '15px', lineHeight: 1.65, color: 'var(--ink-soft)', marginBottom: '1.5rem', fontFamily: 'Newsreader, Georgia, serif', fontStyle: 'italic' }}>
+                Questions open what statements close. Jesus asked more questions than he answered. Sit with one of these — slowly, honestly — and let it do its work.
+              </p>
+              <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', scrollbarWidth: 'none', marginBottom: '1.75rem', paddingBottom: '2px' }}>
+                {QUESTION_CATEGORIES.map(cat => (
+                  <button key={cat.key} onClick={() => setQCategory(cat.key)} style={{ whiteSpace: 'nowrap', flexShrink: 0, padding: '6px 13px', borderRadius: '16px', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s', background: qCategory === cat.key ? 'var(--mauve)' : 'rgba(122,88,130,0.10)', color: qCategory === cat.key ? '#fff' : 'var(--mauve)' }}>
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+              {filtered.map((q, i) => (
+                <div key={q.id} style={{ paddingBottom: '1.75rem', marginBottom: '1.75rem', borderBottom: i < filtered.length - 1 ? '1px solid var(--border-soft)' : 'none' }}>
+                  <p style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.11em', textTransform: 'uppercase', color: 'var(--mauve)', marginBottom: '8px' }}>
+                    {QUESTION_CATEGORIES.find(c => c.key === q.category)?.label}
+                  </p>
+                  <p className="font-reading" style={{ fontSize: '20px', lineHeight: 1.5, color: 'var(--ink)', marginBottom: '12px', fontStyle: 'italic' }}>
+                    &ldquo;{q.question}&rdquo;
+                  </p>
+                  <p style={{ fontSize: '13px', lineHeight: 1.65, color: 'var(--ink-soft)', marginBottom: '8px' }}>{q.context}</p>
+                  <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--mauve)' }}>{q.source}</p>
+                </div>
+              ))}
+            </div>
+          )
+        })()}
 
         {/* ── Hard Words ── */}
         {!searchQuery.trim() && tab === 'hardwords' && (

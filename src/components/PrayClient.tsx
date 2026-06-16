@@ -5,7 +5,6 @@ import { createClient } from '@/lib/supabase/client'
 import type { DailyPrayer } from '@/lib/daily-prayers'
 import PageHeader from '@/components/PageHeader'
 import InnerRoom from '@/components/InnerRoom'
-import { PRAYER_QUESTIONS, QUESTION_CATEGORIES } from '@/lib/prayer-questions'
 
 interface GroupPrayer { id: string; body: string; created_at: string; profiles: { full_name: string } | null }
 interface JournalEntry { id: string; body: string; created_at: string }
@@ -17,7 +16,7 @@ interface Props {
   dailyPrayer: DailyPrayer
 }
 
-type Tab = 'hours' | 'questions' | 'group' | 'meditation' | 'journal'
+type Tab = 'hours' | 'group' | 'meditation' | 'journal'
 
 const LECTIO_STEPS = [
   {
@@ -82,7 +81,6 @@ const HOURS = [
 
 const glowColors: Record<Tab, string> = {
   hours: 'rgba(59,110,168,0.20)',
-  questions: 'rgba(122,88,130,0.20)',
   group: 'rgba(45,112,85,0.20)',
   meditation: 'rgba(90,106,122,0.18)',
   journal: 'rgba(122,88,130,0.18)',
@@ -95,8 +93,6 @@ export default function PrayClient({ userId, groupPrayers: initialPrayers, journ
   const [prayers, setPrayers] = useState(initialPrayers)
   const [prayerDraft, setPrayerDraft] = useState('')
   const [posting, setPosting] = useState(false)
-  const [qCategory, setQCategory] = useState<string>('all')
-
   const section = HOURS[hourSection]
 
   async function postPrayer() {
@@ -112,13 +108,8 @@ export default function PrayClient({ userId, groupPrayers: initialPrayers, journ
     setPosting(false)
   }
 
-  const filteredQuestions = qCategory === 'all'
-    ? PRAYER_QUESTIONS
-    : PRAYER_QUESTIONS.filter(q => q.category === qCategory)
-
   const tabs: [Tab, string][] = [
     ['hours', 'The Hours'],
-    ['questions', 'Questions'],
     ['group', 'Group'],
     ['meditation', 'Meditation'],
     ['journal', 'Inner Room'],
@@ -128,7 +119,7 @@ export default function PrayClient({ userId, groupPrayers: initialPrayers, journ
     <div>
       <PageHeader
         title="Prayer"
-        subtitle="The daily hours, deep questions, and your inner room."
+        subtitle="The daily hours, group prayer, and your inner room."
         glowColor={glowColors[tab]}
       />
 
@@ -172,34 +163,6 @@ export default function PrayClient({ userId, groupPrayers: initialPrayers, journ
                 </div>
                 <p className="font-reading" style={{ color: 'var(--ink)', fontSize: '17px', lineHeight: 1.78, marginBottom: '8px' }}>{p.text}</p>
                 <p style={{ fontSize: '11px', color: 'var(--ink-muted)', fontWeight: 500 }}>{p.ref}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* ── Questions ── */}
-        {tab === 'questions' && (
-          <div>
-            <p style={{ fontSize: '15px', lineHeight: 1.65, color: 'var(--ink-soft)', marginBottom: '1.5rem', fontFamily: 'Newsreader, Georgia, serif', fontStyle: 'italic' }}>
-              Questions open what statements close. Jesus asked more questions than he answered. Sit with one of these — slowly, honestly — and let it do its work.
-            </p>
-            <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', scrollbarWidth: 'none', marginBottom: '1.75rem', paddingBottom: '2px' }}>
-              {QUESTION_CATEGORIES.map(cat => (
-                <button key={cat.key} onClick={() => setQCategory(cat.key)} style={{ whiteSpace: 'nowrap', flexShrink: 0, padding: '6px 13px', borderRadius: '16px', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s', background: qCategory === cat.key ? 'var(--mauve)' : 'rgba(122,88,130,0.10)', color: qCategory === cat.key ? '#fff' : 'var(--mauve)' }}>
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-            {filteredQuestions.map((q, i) => (
-              <div key={q.id} style={{ paddingBottom: '1.75rem', marginBottom: '1.75rem', borderBottom: i < filteredQuestions.length - 1 ? '1px solid var(--border-soft)' : 'none' }}>
-                <p style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.11em', textTransform: 'uppercase', color: 'var(--mauve)', marginBottom: '8px' }}>
-                  {QUESTION_CATEGORIES.find(c => c.key === q.category)?.label}
-                </p>
-                <p className="font-reading" style={{ fontSize: '20px', lineHeight: 1.5, color: 'var(--ink)', marginBottom: '12px', fontStyle: 'italic' }}>
-                  &ldquo;{q.question}&rdquo;
-                </p>
-                <p style={{ fontSize: '13px', lineHeight: 1.65, color: 'var(--ink-soft)', marginBottom: '8px' }}>{q.context}</p>
-                <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--mauve)' }}>{q.source}</p>
               </div>
             ))}
           </div>

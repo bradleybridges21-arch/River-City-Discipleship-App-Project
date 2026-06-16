@@ -18,7 +18,6 @@ const PAGES: NavPage[] = [
     label: 'Pray',
     subs: [
       { label: 'The Hours', description: 'Morning, midday & evening prayer' },
-      { label: 'Questions', description: 'Prayers Jesus prayed and asked' },
       { label: 'Group Prayer', description: 'Pray with your community' },
       { label: 'Meditation', description: 'Lectio Divina & sacred reading' },
       { label: 'Inner Room', description: 'Your private journal' },
@@ -39,6 +38,7 @@ const PAGES: NavPage[] = [
       { label: 'Hard Words', description: 'Grace behind difficult commands' },
       { label: 'Not in the Bible', description: 'Words taught without being named' },
       { label: 'Flesh or Foe?', description: 'Discerning the three enemies' },
+      { label: 'Questions', description: 'Questions Jesus asked and prayed' },
     ],
   },
   {
