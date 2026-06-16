@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import BottomNav from '@/components/BottomNav'
+import TopNav from '@/components/TopNav'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -15,7 +16,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       .limit(1)
     isLeader = (data?.length ?? 0) > 0
 
-    // Also treat the user as leader if they own any groups directly
     if (!isLeader) {
       const { data: owned } = await supabase
         .from('groups')
@@ -27,11 +27,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: 'var(--paper)' }}>
-      <main className="flex-1 pb-24">
+    <div style={{ backgroundColor: 'var(--paper)', minHeight: '100vh' }}>
+      <TopNav isLeader={isLeader} />
+      <main className="app-main" style={{ paddingBottom: '5.5rem' }}>
         {children}
       </main>
-      <BottomNav isLeader={isLeader} />
+      <div className="bottom-nav">
+        <BottomNav isLeader={isLeader} />
+      </div>
     </div>
   )
 }

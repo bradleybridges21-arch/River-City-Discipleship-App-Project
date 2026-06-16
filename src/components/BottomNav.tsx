@@ -75,26 +75,24 @@ export default function BottomNav({ isLeader }: { isLeader: boolean }) {
   const tabs = isLeader ? [...BASE_TABS, ADMIN_TAB] : BASE_TABS
 
   return (
-    <nav
-      style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        paddingBottom: 'max(18px, env(safe-area-inset-bottom))',
-        paddingTop: '10px',
-        paddingLeft: '6px',
-        paddingRight: '6px',
-        background: 'rgba(240,236,224,0.82)',
-        backdropFilter: 'blur(30px) saturate(200%)',
-        WebkitBackdropFilter: 'blur(30px) saturate(200%)',
-        borderTop: '1px solid rgba(255,255,255,0.65)',
-        boxShadow: '0 -1px 0 rgba(30,27,22,0.06), 0 -8px 24px rgba(30,27,22,0.07)',
-      }}
-    >
+    <nav style={{
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-around',
+      paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
+      paddingTop: '10px',
+      paddingLeft: '4px',
+      paddingRight: '4px',
+      background: 'rgba(244,241,235,0.86)',
+      backdropFilter: 'blur(30px) saturate(200%)',
+      WebkitBackdropFilter: 'blur(30px) saturate(200%)',
+      borderTop: '1px solid rgba(255,255,255,0.70)',
+      boxShadow: '0 -1px 0 var(--border-soft), 0 -8px 28px rgba(18,18,31,0.06)',
+    }}>
       {tabs.map(tab => {
         const active = pathname.startsWith(tab.href)
         return (
@@ -105,25 +103,24 @@ export default function BottomNav({ isLeader }: { isLeader: boolean }) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: '4px',
+              gap: '3px',
               minWidth: '44px',
               position: 'relative',
               textDecoration: 'none',
-              color: active ? 'var(--terracotta)' : 'var(--ink-muted)',
+              color: active ? 'var(--blue)' : 'var(--ink-muted)',
+              transition: 'color 0.15s ease',
             }}
           >
-            {/* Active glow pill behind icon */}
             {active && (
               <div style={{
                 position: 'absolute',
-                top: '-2px',
+                top: '-3px',
                 left: '50%',
                 transform: 'translateX(-50%)',
-                width: '40px',
+                width: '38px',
                 height: '28px',
                 borderRadius: '10px',
-                background: 'rgba(184,92,58,0.10)',
-                border: '1px solid rgba(184,92,58,0.15)',
+                background: 'var(--blue-light)',
               }} />
             )}
             <div style={{ position: 'relative' }}>
@@ -132,7 +129,7 @@ export default function BottomNav({ isLeader }: { isLeader: boolean }) {
             <span style={{
               fontSize: '9.5px',
               fontWeight: active ? 700 : 500,
-              letterSpacing: '0.03em',
+              letterSpacing: '0.02em',
             }}>
               {tab.label}
             </span>
