@@ -185,7 +185,7 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
           <button
             key={key}
             onClick={() => setTab(key)}
-            className="px-4 py-2 rounded-full text-sm font-semibold"
+            className="px-4 py-2 rounded-lg text-sm font-semibold"
             style={{
               backgroundColor: tab === key ? 'var(--terracotta)' : 'var(--surface)',
               color: tab === key ? '#fff' : 'var(--ink-soft)',
@@ -201,26 +201,26 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
       {tab === 'overview' && (
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-2xl p-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="rounded-xl p-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
               <p className="text-3xl font-bold" style={{ color: 'var(--ink)' }}>{groups.length}</p>
               <p className="text-xs font-medium mt-1" style={{ color: 'var(--ink-soft)' }}>{groups.length === 1 ? 'Group' : 'Groups'}</p>
             </div>
-            <div className="rounded-2xl p-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="rounded-xl p-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
               <p className="text-3xl font-bold" style={{ color: 'var(--ink)' }}>{memberships.length}</p>
               <p className="text-xs font-medium mt-1" style={{ color: 'var(--ink-soft)' }}>Members</p>
             </div>
-            <div className="rounded-2xl p-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="rounded-xl p-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
               <p className="text-3xl font-bold" style={{ color: 'var(--ink)' }}>{teachings.length}</p>
               <p className="text-xs font-medium mt-1" style={{ color: 'var(--ink-soft)' }}>Teachings</p>
             </div>
-            <div className="rounded-2xl p-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="rounded-xl p-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
               <p className="text-3xl font-bold" style={{ color: 'var(--ink)' }}>{responses.length}</p>
               <p className="text-xs font-medium mt-1" style={{ color: 'var(--ink-soft)' }}>Responses</p>
             </div>
           </div>
 
           {latestTeaching && (
-            <div className="rounded-2xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
               <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--sage)' }}>Latest teaching</p>
               <p className="font-semibold" style={{ color: 'var(--ink)' }}>{latestTeaching.week_label}</p>
               <p className="text-sm mt-1" style={{ color: 'var(--ink-soft)' }}>{latestTeaching.question}</p>
@@ -230,7 +230,7 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
 
           <button
             onClick={() => setTab('teaching')}
-            className="w-full py-3 rounded-2xl font-semibold text-sm"
+            className="w-full py-3 rounded-xl font-semibold text-sm"
             style={{ backgroundColor: 'var(--terracotta)', color: '#fff' }}
           >
             Post this week's teaching
@@ -242,7 +242,7 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
       {tab === 'groups' && (
         <div className="flex flex-col gap-5">
           {/* Create group */}
-          <div className="rounded-2xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+          <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
             <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--sage)' }}>Create a group</p>
             <input
               type="text"
@@ -266,7 +266,7 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
 
           {/* Add member */}
           {groups.length > 0 && (
-            <div className="rounded-2xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
               <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--sage)' }}>Add a member</p>
               <div className="flex flex-col gap-3">
                 <div>
@@ -325,7 +325,7 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
 
           {/* Existing groups */}
           {groups.map(g => (
-            <div key={g.id} className="rounded-2xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div key={g.id} className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
               <p className="font-semibold mb-3" style={{ color: 'var(--ink)' }}>{g.name}</p>
               {membersByGroup(g.id).length === 0 ? (
                 <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>No members yet.</p>
@@ -334,7 +334,7 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
                   {membersByGroup(g.id).map((m, i) => (
                     <div key={i} className="flex items-center gap-3">
                       <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0"
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold flex-shrink-0"
                         style={{ backgroundColor: m.role === 'leader' ? 'var(--terracotta)' : 'var(--sage)', color: '#fff' }}
                       >
                         {(m.profiles?.full_name ?? '?')[0]}
@@ -356,7 +356,7 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
       {tab === 'teaching' && (
         <div className="flex flex-col gap-5">
           {groups.length === 0 ? (
-            <div className="rounded-2xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
               <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Create a group first before posting a teaching.</p>
             </div>
           ) : (
@@ -375,7 +375,7 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
                 <div className="flex gap-2 flex-wrap mb-4">
                   <button
                     onClick={() => setLibraryTheme('All')}
-                    className="px-3 py-1 rounded-full text-xs font-semibold"
+                    className="px-3 py-1 rounded-lg text-xs font-semibold"
                     style={{
                       backgroundColor: libraryTheme === 'All' ? 'var(--ink)' : 'var(--surface)',
                       color: libraryTheme === 'All' ? '#fff' : 'var(--ink-soft)',
@@ -388,7 +388,7 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
                     <button
                       key={theme}
                       onClick={() => setLibraryTheme(theme)}
-                      className="px-3 py-1 rounded-full text-xs font-semibold"
+                      className="px-3 py-1 rounded-lg text-xs font-semibold"
                       style={{
                         backgroundColor: libraryTheme === theme ? 'var(--ink)' : 'var(--surface)',
                         color: libraryTheme === theme ? '#fff' : 'var(--ink-soft)',
@@ -406,7 +406,7 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
                     .map(t => (
                       <div
                         key={t.id}
-                        className="rounded-2xl p-4"
+                        className="rounded-xl p-4"
                         style={{
                           backgroundColor: 'var(--surface)',
                           border: selectedLibraryId === t.id ? '1.5px solid var(--terracotta)' : '1px solid var(--border)',
@@ -432,7 +432,7 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
               </div>
 
               {/* ── Manual / edit form ── */}
-              <div id="teaching-form" className="rounded-2xl p-5 flex flex-col gap-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+              <div id="teaching-form" className="rounded-xl p-5 flex flex-col gap-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
                 <div className="flex items-center gap-3">
                   <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--sage)' }}>
                     {selectedLibraryId ? 'Edit & post' : 'Write your own'}
@@ -463,7 +463,7 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
                 <button
                   onClick={postTeaching}
                   disabled={postingTeaching || !hook.trim() || !scriptureRef.trim() || !question.trim() || !weekLabel.trim()}
-                  className="py-3 rounded-2xl font-semibold text-sm"
+                  className="py-3 rounded-xl font-semibold text-sm"
                   style={{ backgroundColor: 'var(--terracotta)', color: '#fff', opacity: postingTeaching ? 0.6 : 1 }}
                 >
                   {postingTeaching ? 'Posting…' : 'Post teaching'}
@@ -476,7 +476,7 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
             <div className="flex flex-col gap-3">
               <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--ink-soft)' }}>Past teachings</p>
               {teachings.map(t => (
-                <div key={t.id} className="rounded-2xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+                <div key={t.id} className="rounded-xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
                   <p className="font-semibold text-sm" style={{ color: 'var(--ink)' }}>{t.week_label}</p>
                   <p className="text-xs mt-1" style={{ color: 'var(--ink-soft)' }}>{t.question}</p>
                 </div>
@@ -490,12 +490,12 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
       {tab === 'responses' && (
         <div className="flex flex-col gap-4">
           {!latestTeaching ? (
-            <div className="rounded-2xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
               <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>No teachings posted yet. Post a teaching to see responses here.</p>
             </div>
           ) : (
             <>
-              <div className="rounded-2xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+              <div className="rounded-xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
                 <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: 'var(--sage)' }}>Responding to</p>
                 <p className="font-semibold text-sm" style={{ color: 'var(--ink)' }}>{latestTeaching.week_label}</p>
                 <p className="text-xs mt-1" style={{ color: 'var(--ink-soft)' }}>{latestTeaching.question}</p>
@@ -505,7 +505,7 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
                 <p className="text-sm text-center py-4" style={{ color: 'var(--ink-soft)' }}>No responses yet.</p>
               ) : (
                 responses.map(r => (
-                  <div key={r.id} className="rounded-2xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+                  <div key={r.id} className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
                     <p className="text-xs font-semibold mb-2" style={{ color: 'var(--terracotta)' }}>{r.profiles?.full_name ?? 'Member'}</p>
                     <p className="text-sm leading-relaxed" style={{ color: 'var(--ink)' }}>{r.body}</p>
                     <p className="text-xs mt-2" style={{ color: 'var(--sage)' }}>

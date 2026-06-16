@@ -26,14 +26,17 @@ export default function GroupClient({ memberships, members }: Props) {
   const group = memberships[0]?.groups
 
   return (
-    <div className="px-5 pt-10">
-      <h1 className="text-2xl font-semibold mb-1" style={{ color: 'var(--ink)' }}>Group</h1>
-      <p className="text-sm mb-1" style={{ color: 'var(--ink-soft)' }}>
-        {group?.name ?? 'Your discipleship group'}
-      </p>
+    <div>
+      {/* Group header */}
+      <div className="px-5 pt-10 pb-5 relative overflow-hidden" style={{ background: 'linear-gradient(160deg, var(--sage-light) 0%, var(--surface) 60%)' }}>
+        <div className="absolute top-0 left-0 right-0 h-0.5" style={{ backgroundColor: 'var(--sage)' }} />
+        <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: 'var(--sage)' }}>Your group</p>
+        <h1 className="text-2xl font-semibold mb-0" style={{ color: 'var(--ink)' }}>{group?.name ?? 'Discipleship Group'}</h1>
+      </div>
+      <div className="px-5 pt-4">
 
       {!group && (
-        <div className="rounded-2xl p-5 mb-5 mt-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+        <div className="rounded-xl p-5 mb-5 mt-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
           <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
             You're not in a group yet. Your leader will add you. Check back soon.
           </p>
@@ -46,7 +49,7 @@ export default function GroupClient({ memberships, members }: Props) {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className="px-4 py-2 rounded-full text-sm font-semibold"
+            className="px-4 py-2 rounded-lg text-sm font-semibold"
             style={{
               backgroundColor: tab === t ? 'var(--terracotta)' : 'var(--surface)',
               color: tab === t ? '#fff' : 'var(--ink-soft)',
@@ -61,7 +64,7 @@ export default function GroupClient({ memberships, members }: Props) {
       {tab === 'calendar' && (
         <div className="flex flex-col gap-3">
           {PLACEHOLDER_EVENTS.map((e, i) => (
-            <div key={i} className="flex items-center gap-4 rounded-2xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div key={i} className="flex items-center gap-4 rounded-xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
               <div className="flex-shrink-0 w-12 text-center">
                 <p className="text-xs font-semibold" style={{ color: 'var(--terracotta)' }}>{e.date.split(' ')[0]}</p>
                 <p className="text-xl font-bold leading-tight" style={{ color: 'var(--ink)' }}>{e.date.split(' ')[1]}</p>
@@ -84,9 +87,9 @@ export default function GroupClient({ memberships, members }: Props) {
             <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>No members yet.</p>
           ) : (
             members.map((m, i) => (
-              <div key={i} className="flex items-center gap-3 rounded-2xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+              <div key={i} className="flex items-center gap-3 rounded-xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
                 <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center font-semibold text-sm flex-shrink-0"
+                  className="w-9 h-9 rounded-lg flex items-center justify-center font-semibold text-sm flex-shrink-0"
                   style={{ backgroundColor: 'var(--sage)', color: '#fff' }}
                 >
                   {(m.profiles?.full_name ?? '?')[0]}
@@ -100,6 +103,7 @@ export default function GroupClient({ memberships, members }: Props) {
           )}
         </div>
       )}
+      </div>
     </div>
   )
 }

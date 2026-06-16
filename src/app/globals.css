@@ -3,13 +3,37 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #f2efe8;
-  --ink: #2c2824;
-  --ink-soft: #5a534a;
-  --terracotta: #c0654a;
-  --sage: #8f9d84;
-  --surface: #faf8f3;
-  --border: #e0d9cc;
+  /* Base surfaces */
+  --paper: #f0ece0;
+  --paper-2: #e8e3d6;
+  --surface: #faf7f0;
+  --surface-2: #f4f0e5;
+  --ink: #1e1b16;
+  --ink-soft: #5c5446;
+  --ink-muted: #9c9082;
+  --border: #ddd5c0;
+  --border-soft: #ece6d8;
+
+  /* Brand colors */
+  --terracotta: #b85c3a;
+  --terracotta-light: #f0e0d6;
+  --sage: #5c7a60;
+  --sage-light: #ddeadb;
+
+  /* Extended palette — soft but vibrant */
+  --slate: #5c7a96;
+  --slate-light: #dce8f0;
+  --gold: #b07830;
+  --gold-light: #f0e4cc;
+  --mauve: #8a6a90;
+  --mauve-light: #ecdff0;
+  --sienna: #8a5a3a;
+  --sienna-light: #eeddd0;
+
+  /* Depth */
+  --shadow-sm: 0 1px 4px rgba(30, 27, 22, 0.07), 0 0 0 1px rgba(30,27,22,0.04);
+  --shadow-md: 0 4px 16px rgba(30, 27, 22, 0.10), 0 1px 4px rgba(30,27,22,0.06);
+  --shadow-lg: 0 8px 32px rgba(30, 27, 22, 0.13), 0 2px 8px rgba(30,27,22,0.08);
 }
 
 html, body {
@@ -22,4 +46,17 @@ html, body {
 
 .font-reading {
   font-family: 'Newsreader', Georgia, serif;
+}
+
+/* Card depth layers */
+.card {
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  border-radius: 12px;
+}
+
+.card-raised {
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  border-radius: 12px;
 }

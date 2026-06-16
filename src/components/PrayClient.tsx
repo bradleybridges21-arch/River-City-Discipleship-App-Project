@@ -96,14 +96,18 @@ export default function PrayClient({ userId, groupPrayers: initialPrayers, journ
       <p className="text-sm mb-5" style={{ color: 'var(--ink-soft)' }}>The daily office, group requests, and your inner room.</p>
 
       {/* Daily prayer banner */}
-      <div className="rounded-2xl px-5 py-4 mb-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-        <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--sage)' }}>
+      <div className="rounded-xl px-5 py-5 mb-5 relative overflow-hidden" style={{
+        background: 'linear-gradient(135deg, var(--slate) 0%, #3d5a7a 100%)',
+        boxShadow: 'var(--shadow-md)',
+      }}>
+        <div className="absolute inset-0 opacity-10" style={{ background: 'radial-gradient(circle at 80% 20%, #fff 0%, transparent 60%)' }} />
+        <p className="text-xs font-semibold tracking-widest uppercase mb-3 relative" style={{ color: 'rgba(255,255,255,0.6)' }}>
           Today's prayer
         </p>
-        <p className="font-reading italic leading-relaxed" style={{ color: 'var(--ink)', fontSize: '15px' }}>
+        <p className="font-reading italic leading-relaxed mb-3 relative" style={{ color: '#fff', fontSize: '15px' }}>
           "{dailyPrayer.text}"
         </p>
-        <p className="text-xs mt-2 font-medium" style={{ color: 'var(--ink-soft)' }}>— {dailyPrayer.attribution}</p>
+        <p className="text-xs font-medium relative" style={{ color: 'rgba(255,255,255,0.6)' }}>— {dailyPrayer.attribution}</p>
       </div>
 
       {/* Tabs */}
@@ -112,7 +116,7 @@ export default function PrayClient({ userId, groupPrayers: initialPrayers, journ
           <button
             key={t}
             onClick={() => setTab(t)}
-            className="px-4 py-2 rounded-full text-sm font-semibold transition-colors"
+            className="px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
             style={{
               backgroundColor: tab === t ? 'var(--terracotta)' : 'var(--surface)',
               color: tab === t ? '#fff' : 'var(--ink-soft)',
@@ -132,7 +136,7 @@ export default function PrayClient({ userId, groupPrayers: initialPrayers, journ
               <button
                 key={s.label}
                 onClick={() => setOfficeSection(i)}
-                className="px-4 py-1.5 rounded-full text-xs font-semibold"
+                className="px-4 py-1.5 rounded-lg text-xs font-semibold"
                 style={{
                   backgroundColor: officeSection === i ? 'var(--ink)' : 'var(--surface)',
                   color: officeSection === i ? '#fff' : 'var(--ink-soft)',
@@ -143,20 +147,26 @@ export default function PrayClient({ userId, groupPrayers: initialPrayers, journ
               </button>
             ))}
           </div>
-          {section.prayers.map((p, i) => (
-            <div key={i} className="rounded-2xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-              <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--sage)' }}>{p.title}</p>
-              <p className="font-reading leading-relaxed mb-2" style={{ color: 'var(--ink)', fontSize: '16px' }}>{p.text}</p>
-              <p className="text-xs font-medium" style={{ color: 'var(--ink-soft)' }}>{p.ref}</p>
-            </div>
-          ))}
+          {section.prayers.map((p, i) => {
+            const topColors = ['var(--gold)', 'var(--sage)', 'var(--terracotta)']
+            return (
+              <div key={i} className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
+                <div className="h-0.5 w-full" style={{ backgroundColor: topColors[i % 3] }} />
+                <div className="p-5">
+                  <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: topColors[i % 3] }}>{p.title}</p>
+                  <p className="font-reading leading-relaxed mb-2" style={{ color: 'var(--ink)', fontSize: '16px' }}>{p.text}</p>
+                  <p className="text-xs font-medium" style={{ color: 'var(--ink-soft)' }}>{p.ref}</p>
+                </div>
+              </div>
+            )
+          })}
         </div>
       )}
 
       {/* Group prayer */}
       {tab === 'group' && (
         <div className="flex flex-col gap-4">
-          <div className="rounded-2xl p-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+          <div className="rounded-xl p-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
             <textarea
               value={prayerDraft}
               onChange={e => setPrayerDraft(e.target.value)}
@@ -178,7 +188,7 @@ export default function PrayClient({ userId, groupPrayers: initialPrayers, journ
             <p className="text-sm text-center py-4" style={{ color: 'var(--ink-soft)' }}>No prayer requests yet. Be the first to share.</p>
           )}
           {prayers.map(p => (
-            <div key={p.id} className="rounded-2xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div key={p.id} className="rounded-xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
               <p className="text-sm leading-relaxed" style={{ color: 'var(--ink)' }}>{p.body}</p>
               <p className="text-xs mt-2" style={{ color: 'var(--sage)' }}>
                 {p.profiles?.full_name ?? 'Someone'} · {new Date(p.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
@@ -191,9 +201,12 @@ export default function PrayClient({ userId, groupPrayers: initialPrayers, journ
       {/* Inner room journal */}
       {tab === 'journal' && (
         <div className="flex flex-col gap-4">
-          <div className="rounded-2xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-            <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: 'var(--sage)' }}>Inner room</p>
+          <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
+            <div className="px-5 pt-5 pb-1" style={{ background: 'linear-gradient(135deg, var(--mauve-light) 0%, transparent 60%)' }}>
+            <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: 'var(--mauve)' }}>Inner room</p>
             <p className="text-xs mb-3" style={{ color: 'var(--ink-soft)' }}>Private to you only. No one else can read this.</p>
+            </div>
+            <div className="px-5 pb-5">
             <textarea
               value={journalDraft}
               onChange={e => setJournalDraft(e.target.value)}
@@ -210,9 +223,10 @@ export default function PrayClient({ userId, groupPrayers: initialPrayers, journ
             >
               {journalSaved ? 'Saved.' : savingJournal ? 'Saving…' : 'Save to inner room'}
             </button>
+            </div>
           </div>
           {entries.map(e => (
-            <div key={e.id} className="rounded-2xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div key={e.id} className="rounded-xl px-5 py-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
               <p className="font-reading leading-relaxed" style={{ color: 'var(--ink)', fontSize: '15px' }}>{e.body}</p>
               <p className="text-xs mt-2" style={{ color: 'var(--sage)' }}>
                 {new Date(e.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}

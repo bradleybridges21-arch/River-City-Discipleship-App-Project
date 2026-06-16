@@ -89,7 +89,7 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
           <button
             key={key}
             onClick={() => setTab(key)}
-            className="px-4 py-2 rounded-full text-sm font-semibold transition-colors"
+            className="px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
             style={{
               backgroundColor: tab === key ? 'var(--terracotta)' : 'var(--surface)',
               color: tab === key ? '#fff' : 'var(--ink-soft)',
@@ -105,31 +105,33 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
       {tab === 'teaching' && (
         <div className="flex flex-col gap-4">
           {!teaching ? (
-            <div className="rounded-2xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
               <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Your leader hasn't posted this week's teaching yet. Check back soon.</p>
             </div>
           ) : (
             <>
-              <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-                {/* Colored top bar */}
-                <div className="h-1 w-full" style={{ backgroundColor: 'var(--terracotta)' }} />
+              <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)' }}>
+                {/* Gradient header */}
+                <div className="px-5 pt-5 pb-4 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--terracotta-light) 0%, var(--surface) 70%)' }}>
+                  <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: 'var(--terracotta)' }} />
+                  <p className="text-xs font-semibold tracking-widest uppercase mb-3 pl-3" style={{ color: 'var(--terracotta)' }}>{teaching.week_label}</p>
+                  <p className="text-base leading-relaxed pl-3" style={{ color: 'var(--ink)' }}>{teaching.hook}</p>
+                </div>
                 <div className="p-5">
-                  <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--terracotta)' }}>{teaching.week_label}</p>
-                  <p className="text-base leading-relaxed mb-5" style={{ color: 'var(--ink)' }}>{teaching.hook}</p>
 
                   <div className="flex items-start gap-3 mb-4">
-                    <div className="w-0.5 self-stretch rounded-full flex-shrink-0 mt-1" style={{ backgroundColor: 'var(--sage)' }} />
+                    <div className="w-0.5 self-stretch rounded-lg flex-shrink-0 mt-1" style={{ backgroundColor: 'var(--sage)' }} />
                     <p className="font-reading italic leading-relaxed" style={{ color: 'var(--ink)', fontSize: '17px' }}>{teaching.scripture_ref}</p>
                   </div>
 
                   {teaching.application && (
-                    <p className="text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>{teaching.application}</p>
+                    <p className="text-sm leading-relaxed mt-4" style={{ color: 'var(--ink-soft)' }}>{teaching.application}</p>
                   )}
                 </div>
               </div>
 
-              <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-                <div className="h-1 w-full" style={{ backgroundColor: 'var(--sage)' }} />
+              <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
+                <div className="h-0.5 w-full" style={{ backgroundColor: 'var(--sage)' }} />
                 <div className="p-5">
                   <p className="font-semibold mb-3 leading-snug" style={{ color: 'var(--ink)', fontSize: '16px' }}>{teaching.question}</p>
                   <textarea
@@ -180,7 +182,7 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
                   >
                     {/* Colored number pill */}
                     <span
-                      className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold mt-0.5"
+                      className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold mt-0.5"
                       style={{ backgroundColor: accent + '22', color: accent }}
                     >
                       {i + 1}
@@ -193,7 +195,7 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
                         <div className="mt-3">
                           {/* Left accent line */}
                           <div className="flex gap-3">
-                            <div className="w-0.5 flex-shrink-0 rounded-full self-stretch" style={{ backgroundColor: accent }} />
+                            <div className="w-0.5 flex-shrink-0 rounded-lg self-stretch" style={{ backgroundColor: accent }} />
                             <p className="font-reading leading-relaxed pb-1" style={{ color: 'var(--ink)', fontSize: '15px' }}>
                               {item.a}
                             </p>
@@ -221,7 +223,7 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
       {tab === 'creeds' && (
         <div className="flex flex-col gap-4">
           {/* Creed selector — pill toggle */}
-          <div className="flex rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
+          <div className="flex rounded-xl overflow-hidden" style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
             {CREEDS.map((c, i) => (
               <button
                 key={i}
@@ -237,16 +239,16 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
             ))}
           </div>
 
-          <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-            <div className="h-1" style={{ backgroundColor: 'var(--terracotta)' }} />
+          <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)' }}>
+            <div className="px-5 py-4 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--gold-light) 0%, var(--surface) 70%)' }}>
+              <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: 'var(--gold)' }} />
+              <p className="text-xs font-semibold tracking-widest uppercase pl-3" style={{ color: 'var(--gold)' }}>{creed.title}</p>
+              <p className="text-xs pl-3 mt-1" style={{ color: 'var(--ink-muted)' }}>{creed.date}</p>
+            </div>
             <div className="p-5">
-              <div className="flex items-baseline gap-3 mb-5">
-                <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--sage)' }}>{creed.title}</p>
-                <p className="text-xs" style={{ color: 'var(--border)' }}>{creed.date}</p>
-              </div>
               {creed.text.split('\n\n').map((para, i) => (
                 <div key={i} className="mb-4 flex gap-3 items-start">
-                  <div className="w-0.5 flex-shrink-0 self-stretch rounded-full" style={{ backgroundColor: i === 0 ? 'var(--terracotta)' : 'var(--border)' }} />
+                  <div className="w-0.5 flex-shrink-0 self-stretch rounded-lg" style={{ backgroundColor: i === 0 ? 'var(--gold)' : 'var(--border)' }} />
                   <p className="font-reading leading-relaxed" style={{ color: 'var(--ink)', fontSize: '16px' }}>
                     {para}
                   </p>
