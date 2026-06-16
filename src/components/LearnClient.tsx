@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import PageHeader from '@/components/PageHeader'
 import { HYMNS, HYMN_CATEGORIES } from '@/lib/hymns'
 import { BIBLE_BOOKS, OT_SECTIONS, NT_SECTIONS } from '@/lib/bible-books'
+import { COUNTERFEITS, CAPSTONE } from '@/lib/true-blessing'
+import { TEACHING_LIBRARY } from '@/lib/teaching-library'
 
 interface Teaching {
   id: string; week_label: string; hook: string
@@ -116,7 +118,8 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
   latestResponse: Response | null
 }) {
   const supabase = createClient()
-  const [tab, setTab] = useState<'teaching' | 'catechism' | 'creeds' | 'didache' | 'solas' | 'hymns' | 'bible'>('teaching')
+  const [tab, setTab] = useState<'teaching' | 'catechism' | 'creeds' | 'didache' | 'solas' | 'hymns' | 'bible' | 'blessing'>('teaching')
+  const [searchQuery, setSearchQuery] = useState('')
   const [creedIndex, setCreedIndex] = useState(0)
   const [responseDraft, setResponseDraft] = useState(latestResponse?.body ?? '')
   const [response, setResponse] = useState<Response | null>(latestResponse)
@@ -147,15 +150,64 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
 
   const creed = CREEDS[creedIndex]
 
+  // ── Search ────────────────────────────────────────────────
+  const q = searchQuery.trim().toLowerCase()
+  type SearchResult = { type: string; title: string; subtitle: string; body: string; tabKey: string; itemId?: string | number }
+  const searchResults: SearchResult[] = q.length < 2 ? [] : [
+    ...TEACHING_LIBRARY.filter(t =>
+      [t.theme, t.week_label, t.hook, t.context ?? '', t.scripture_ref, t.application, t.transformation ?? ''].some(s => s.toLowerCase().includes(q))
+    ).map(t => ({ type: 'Teaching', title: t.week_label, subtitle: t.theme, body: t.hook, tabKey: 'teaching', itemId: t.id })),
+
+    ...CATECHISM.filter(c => c.q.toLowerCase().includes(q) || c.a.toLowerCase().includes(q))
+      .map((c, i) => ({ type: 'Catechism', title: c.q, subtitle: `Westminster Shorter · ${c.ref}`, body: c.a, tabKey: 'catechism', itemId: i })),
+
+    ...DIDACHE_CHAPTERS.filter(ch => ch.title.toLowerCase().includes(q) || ch.text.toLowerCase().includes(q))
+      .map(ch => ({ type: 'Didache', title: `Chapter ${ch.n}: ${ch.title}`, subtitle: 'The Didache · c. 50–120 AD', body: ch.text.slice(0, 180) + '…', tabKey: 'didache', itemId: ch.n })),
+
+    ...CREEDS.filter(c => c.title.toLowerCase().includes(q) || c.text.toLowerCase().includes(q))
+      .map(c => ({ type: 'Creed', title: c.title, subtitle: c.date, body: c.text.slice(0, 180) + '…', tabKey: 'creeds' })),
+
+    ...SOLAS.filter(s => [s.latin, s.english, s.meaning, s.history, s.scriptureText].some(v => v.toLowerCase().includes(q)))
+      .map(s => ({ type: '5 Solas', title: s.latin, subtitle: s.english, body: s.meaning.slice(0, 180) + '…', tabKey: 'solas' })),
+
+    ...HYMNS.filter(h => [h.title, h.author, h.verses, h.meaning, h.legacy, h.occasion].some(v => v.toLowerCase().includes(q)))
+      .map(h => ({ type: 'Hymn', title: h.title, subtitle: `${h.author} · ${h.year}`, body: h.meaning.slice(0, 180) + '…', tabKey: 'hymns', itemId: h.id })),
+
+    ...BIBLE_BOOKS.filter(b => [b.name, b.author, b.preface, b.audience, ...b.themes].some(v => v.toLowerCase().includes(q)))
+      .map(b => ({ type: 'Bible', title: b.name, subtitle: `${b.author} · ${b.date}`, body: b.preface.slice(0, 180) + '…', tabKey: 'bible', itemId: b.name })),
+
+    ...COUNTERFEITS.filter(c => [c.name, c.the_lie, c.the_truth, c.church_witness, c.transformation, c.scriptureText].some(v => v.toLowerCase().includes(q)))
+      .map(c => ({ type: 'The Blessing', title: c.name, subtitle: c.tagline, body: c.the_truth.slice(0, 180) + '…', tabKey: 'blessing', itemId: c.id })),
+  ]
+
   return (
     <div>
       <PageHeader title="Learn" subtitle="Teaching, catechism, and the creeds." glowColor="rgba(176,120,48,0.20)" />
 
       <div style={{ background: 'var(--paper)', borderRadius: '24px 24px 0 0', marginTop: '-20px', position: 'relative', zIndex: 1, padding: '1.5rem 1.125rem 2rem' }}>
 
+        {/* Search bar */}
+        <div style={{ position: 'relative', marginBottom: '1rem' }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--ink-muted)', pointerEvents: 'none' }}>
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+          </svg>
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Search teachings, catechism, hymns, Scripture…"
+            style={{ width: '100%', paddingLeft: '38px', paddingRight: searchQuery ? '36px' : '14px', paddingTop: '10px', paddingBottom: '10px', borderRadius: '14px', fontSize: '14px', border: '1px solid var(--border)', background: 'rgba(255,255,255,0.70)', color: 'var(--ink)', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+          />
+          {searchQuery && (
+            <button onClick={() => setSearchQuery('')} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', padding: '4px', display: 'flex', alignItems: 'center' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          )}
+        </div>
+
         {/* Scrollable pill tabs */}
         <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none', marginBottom: '1.25rem' }}>
-          {([['teaching', 'This Week'], ['catechism', 'Catechism'], ['creeds', 'Creeds'], ['didache', 'Didache'], ['solas', '5 Solas'], ['hymns', 'Hymns'], ['bible', 'Bible Books']] as const).map(([key, label]) => (
+          {([['teaching', 'This Week'], ['catechism', 'Catechism'], ['creeds', 'Creeds'], ['didache', 'Didache'], ['solas', '5 Solas'], ['hymns', 'Hymns'], ['bible', 'Bible Books'], ['blessing', 'The Blessing']] as const).map(([key, label]) => (
             <button
               key={key}
               onClick={() => setTab(key)}
@@ -170,8 +222,42 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
           ))}
         </div>
 
+        {/* ── Search results ── */}
+        {searchQuery.trim().length >= 2 && (
+          <div>
+            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--ink-muted)', marginBottom: '1rem' }}>
+              {searchResults.length} {searchResults.length === 1 ? 'result' : 'results'} for &ldquo;{searchQuery.trim()}&rdquo;
+            </p>
+            {searchResults.length === 0 ? (
+              <div className="glass" style={{ borderRadius: '14px', padding: '1.25rem' }}>
+                <p style={{ color: 'var(--ink-muted)', fontSize: '14px', lineHeight: 1.6 }}>Nothing found. Try a different word — or browse the tabs above to explore by topic.</p>
+              </div>
+            ) : (
+              searchResults.map((r, i) => (
+                <button
+                  key={i}
+                  onClick={() => { setSearchQuery(''); setTab(r.tabKey as typeof tab) }}
+                  style={{ width: '100%', textAlign: 'left', padding: '0.875rem 0', display: 'flex', alignItems: 'flex-start', gap: '12px', background: 'none', border: 'none', borderBottom: '1px solid var(--border-soft)', cursor: 'pointer' }}
+                >
+                  <span style={{ flexShrink: 0, padding: '3px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', background: 'var(--blue-light)', color: 'var(--blue)', marginTop: '2px', whiteSpace: 'nowrap' }}>
+                    {r.type}
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontWeight: 600, fontSize: '14px', color: 'var(--ink)', lineHeight: 1.4, marginBottom: '2px' }}>{r.title}</p>
+                    <p style={{ fontSize: '11px', color: 'var(--ink-muted)', marginBottom: '6px' }}>{r.subtitle}</p>
+                    <p style={{ fontSize: '13px', color: 'var(--ink-soft)', lineHeight: 1.55 }}>{r.body}</p>
+                  </div>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--border)', flexShrink: 0, marginTop: '4px' }}>
+                    <path d="M9 18l6-6-6-6"/>
+                  </svg>
+                </button>
+              ))
+            )}
+          </div>
+        )}
+
         {/* ── This week's teaching ── */}
-        {tab === 'teaching' && (
+        {!searchQuery.trim() && tab === 'teaching' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {!teaching ? (
               <div className="glass" style={{ borderRadius: '16px', padding: '1.25rem' }}>
@@ -221,7 +307,7 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
         )}
 
         {/* ── Catechism ── */}
-        {tab === 'catechism' && (
+        {!searchQuery.trim() && tab === 'catechism' && (
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.25rem' }}>
               <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
@@ -267,7 +353,7 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
         )}
 
         {/* ── Creeds ── */}
-        {tab === 'creeds' && (
+        {!searchQuery.trim() && tab === 'creeds' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {/* Creed selector */}
             <div className="seg-control">
@@ -297,7 +383,7 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
         )}
 
         {/* ── Didache ── */}
-        {tab === 'didache' && (
+        {!searchQuery.trim() && tab === 'didache' && (
           <div>
             <div className="glass" style={{ borderRadius: '16px', padding: '1.125rem 1.25rem', marginBottom: '12px', borderLeft: '3px solid var(--sienna)' }}>
               <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--sienna)', marginBottom: '6px' }}>The Teaching of the Twelve Apostles</p>
@@ -341,7 +427,7 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
         )}
 
         {/* ── Hymns ── */}
-        {tab === 'hymns' && (
+        {!searchQuery.trim() && tab === 'hymns' && (
           <div>
             <div className="glass" style={{ borderRadius: '16px', padding: '1.125rem 1.25rem', marginBottom: '16px', borderLeft: '3px solid var(--mauve)' }}>
               <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--mauve)', marginBottom: '6px' }}>A Library of Hymns</p>
@@ -402,7 +488,7 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
         )}
 
         {/* ── Bible Books ── */}
-        {tab === 'bible' && (
+        {!searchQuery.trim() && tab === 'bible' && (
           <div>
             <div className="glass" style={{ borderRadius: '16px', padding: '1.125rem 1.25rem', marginBottom: '16px', borderLeft: '3px solid var(--blue)' }}>
               <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--blue)', marginBottom: '6px' }}>The Books of the Bible</p>
@@ -473,7 +559,7 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
         )}
 
         {/* ── 5 Solas ── */}
-        {tab === 'solas' && (
+        {!searchQuery.trim() && tab === 'solas' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div className="glass" style={{ borderRadius: '16px', padding: '1.125rem 1.25rem', borderLeft: '3px solid var(--gold)' }}>
               <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '6px' }}>The Five Solas</p>
@@ -505,6 +591,82 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* ── The Blessing ── */}
+        {!searchQuery.trim() && tab === 'blessing' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+            {/* Intro */}
+            <div className="glass" style={{ borderRadius: '16px', padding: '1.25rem', marginBottom: '20px', borderLeft: '3px solid #1e3f6b' }}>
+              <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: '#1e3f6b', marginBottom: '8px' }}>The Blessing Is Christ</p>
+              <p style={{ fontSize: '13px', lineHeight: 1.65, color: 'var(--ink-soft)', marginBottom: '10px' }}>
+                Every generation inherits a set of false gospels — promises that look like blessing but lead away from Christ. The prosperity gospel wears many costumes. Here are the ones most alive in our time: the promises of money, comfort, ease, safety, self-protection, approval, and control. Each one is named, examined, and answered — not with rules, but with Christ himself.
+              </p>
+              <p className="font-reading" style={{ fontSize: '15px', fontStyle: 'italic', color: 'var(--ink)', lineHeight: 1.7 }}>
+                &ldquo;Indeed, I count everything as loss because of the surpassing worth of knowing Christ Jesus my Lord.&rdquo;
+              </p>
+              <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ink-muted)', marginTop: '6px' }}>Philippians 3:8</p>
+            </div>
+
+            {/* Counterfeit cards */}
+            {COUNTERFEITS.map((c, i) => {
+              const isLast = c.id === 'christ'
+              return (
+                <div key={c.id} className="glass" style={{ borderRadius: '16px', overflow: 'hidden', marginBottom: isLast ? '20px' : '12px' }}>
+                  <div style={{ height: '3px', background: c.color }} />
+                  <div style={{ padding: '1.125rem 1.25rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px', marginBottom: '8px' }}>
+                      <div>
+                        <p style={{ fontFamily: 'Newsreader, Georgia, serif', fontSize: '20px', fontWeight: 600, color: c.color, lineHeight: 1.2, marginBottom: '2px' }}>{c.name}</p>
+                        <p style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-muted)' }}>{c.tagline}</p>
+                      </div>
+                      <span style={{ flexShrink: 0, fontSize: '10px', fontWeight: 700, padding: '3px 9px', borderRadius: '8px', background: c.color + '18', color: c.color, whiteSpace: 'nowrap', marginTop: '4px' }}>
+                        {isLast ? 'The Truth' : 'Counterfeit'}
+                      </span>
+                    </div>
+
+                    {/* Scripture */}
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', marginBottom: '1rem', background: 'rgba(30,27,22,0.04)', borderRadius: '10px', padding: '10px 12px' }}>
+                      <div style={{ width: '2px', flexShrink: 0, alignSelf: 'stretch', borderRadius: '2px', background: c.color }} />
+                      <div>
+                        <p className="font-reading" style={{ fontSize: '14px', lineHeight: 1.7, fontStyle: 'italic', color: 'var(--ink)' }}>{c.scriptureText}</p>
+                        <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ink-muted)', marginTop: '5px' }}>{c.scripture}</p>
+                      </div>
+                    </div>
+
+                    {!isLast && (
+                      <>
+                        <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: c.color, marginBottom: '5px' }}>The Lie</p>
+                        <p style={{ fontSize: '13px', lineHeight: 1.65, color: 'var(--ink-soft)', marginBottom: '1rem' }}>{c.the_lie}</p>
+
+                        <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: c.color, marginBottom: '5px' }}>Why It Fails</p>
+                        <p style={{ fontSize: '13px', lineHeight: 1.65, color: 'var(--ink-soft)', marginBottom: '1rem' }}>{c.why_it_fails}</p>
+                      </>
+                    )}
+
+                    <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: c.color, marginBottom: '5px' }}>The Truth</p>
+                    <p style={{ fontSize: '13px', lineHeight: 1.65, color: 'var(--ink-soft)', marginBottom: '1rem' }}>{c.the_truth}</p>
+
+                    <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: c.color, marginBottom: '5px' }}>The Church Witness</p>
+                    <p style={{ fontSize: '13px', lineHeight: 1.65, color: 'var(--ink-soft)', marginBottom: '1rem' }}>{c.church_witness}</p>
+
+                    <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: c.color, marginBottom: '5px' }}>Becoming Like Christ</p>
+                    <p style={{ fontSize: '13px', lineHeight: 1.65, color: 'var(--ink-soft)' }}>{c.transformation}</p>
+                  </div>
+                </div>
+              )
+            })}
+
+            {/* Capstone */}
+            <div style={{ background: 'linear-gradient(160deg, var(--dark) 0%, var(--dark-2) 100%)', borderRadius: '20px', padding: '1.5rem', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: '60%', paddingBottom: '60%', background: 'radial-gradient(circle, rgba(59,110,168,0.22) 0%, transparent 68%)', pointerEvents: 'none' }} />
+              <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginBottom: '0.75rem', position: 'relative' }}>{CAPSTONE.title}</p>
+              {CAPSTONE.body.split('\n\n').map((para, i) => (
+                <p key={i} className={i === 0 ? 'font-reading' : ''} style={{ fontSize: i === 0 ? '16px' : '14px', lineHeight: 1.75, color: i === 0 ? 'rgba(255,255,255,0.88)' : 'rgba(255,255,255,0.60)', marginBottom: '1rem', fontStyle: i === 0 ? 'normal' : 'normal', position: 'relative' }}>{para}</p>
+              ))}
+              <p className="font-reading" style={{ fontSize: '17px', fontStyle: 'italic', color: 'rgba(255,255,255,0.82)', position: 'relative', marginTop: '0.5rem' }}>He is the blessing. Everything else is gift.</p>
+            </div>
           </div>
         )}
       </div>
