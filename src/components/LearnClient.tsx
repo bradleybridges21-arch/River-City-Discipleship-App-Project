@@ -28,11 +28,21 @@ const ACCENTS = ['#c0654a', '#8f9d84', '#7a8faa', '#b8956a', '#a07a8f']
 const CREEDS = [
   {
     title: 'Apostles\' Creed',
+    shortTitle: 'Apostles\'',
+    date: 'c. 140 AD',
     text: `I believe in God, the Father Almighty, Creator of heaven and earth, and in Jesus Christ, His only Son, our Lord, who was conceived by the Holy Spirit, born of the Virgin Mary, suffered under Pontius Pilate, was crucified, died and was buried; He descended into hell; on the third day He rose again from the dead; He ascended into heaven, and is seated at the right hand of God the Father Almighty; from there He will come to judge the living and the dead.\n\nI believe in the Holy Spirit, the holy catholic Church, the communion of saints, the forgiveness of sins, the resurrection of the body, and life everlasting. Amen.`,
   },
   {
     title: 'Nicene Creed',
+    shortTitle: 'Nicene',
+    date: '325 AD',
     text: `We believe in one God, the Father Almighty, Maker of heaven and earth, and of all things visible and invisible.\n\nAnd in one Lord Jesus Christ, the only-begotten Son of God, begotten of the Father before all worlds; God of God, Light of Light, very God of very God; begotten, not made, being of one substance with the Father, by whom all things were made.\n\nWho, for us men and for our salvation, came down from heaven, and was incarnate by the Holy Spirit of the virgin Mary, and was made man; and was crucified also for us under Pontius Pilate; He suffered and was buried; and the third day He rose again, according to the Scriptures; and ascended into heaven, and sits on the right hand of the Father; and He shall come again, with glory, to judge the quick and the dead; whose kingdom shall have no end.\n\nAnd we believe in the Holy Ghost, the Lord and Giver of Life; who proceeds from the Father and the Son; who with the Father and the Son together is worshipped and glorified; who spoke by the prophets.\n\nAnd we believe in one holy catholic and apostolic Church. We acknowledge one baptism for the remission of sins. And we look for the resurrection of the dead, and the life of the world to come. Amen.`,
+  },
+  {
+    title: 'The Didache',
+    shortTitle: 'Didache',
+    date: 'c. 50–120 AD',
+    text: `There are two ways, one of life and one of death, and there is a great difference between the two ways.\n\nThe way of life is this: First, you shall love God who made you; and second, your neighbor as yourself; and whatever you do not want to happen to you, do not do to another.\n\nThe teaching of these words is this: Bless those who curse you, and pray for your enemies, and fast for those who persecute you. For what credit is it if you love those who love you? Do not even the Gentiles do the same?\n\nBut you shall love those who hate you, and you will not have an enemy.\n\nAbstain from fleshly and bodily cravings. If someone strikes you on the right cheek, turn the other also, and you will be perfect. If someone compels you to go one mile, go two. If someone takes your cloak, give him your tunic also. If someone takes what is yours, do not ask for it back.\n\nGive to everyone who asks of you, and do not ask for it back; for the Father wants gifts to be given to all from his own free gifts.\n\nAnd concerning baptism, baptize this way: having said all these things beforehand, baptize in the name of the Father and of the Son and of the Holy Spirit in running water.\n\nAnd do not let your fasts be with the hypocrites, for they fast on the second day of the week and on the fifth; but fast on the fourth day and on the day of preparation.\n\nNeither pray as the hypocrites do, but as the Lord commanded in his Gospel: Our Father who art in heaven, hallowed be thy name. Thy kingdom come. Thy will be done, as in heaven, so on earth. Give us today our daily bread, and forgive us our debt as we also forgive our debtors. And bring us not into temptation, but deliver us from the evil one; for thine is the power and the glory for ever.\n\nPray this three times each day.\n\nAnd on the Lord's day, gather together, break bread and give thanks, having beforehand confessed your transgressions, that your sacrifice may be pure. But let no one who is at odds with his fellow come together with you, until they be reconciled, that your sacrifice may not be profaned.\n\nWhoever comes and teaches you all these things that have been said before, receive him. But if the teacher himself turns and teaches another doctrine to the destruction of this, hear him not.\n\nWatch for your life's sake. Let not your lamps be quenched, nor your loins unloosed; but be ready, for you know not the hour in which our Lord comes.`,
   },
 ]
 
@@ -216,13 +226,13 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
               <button
                 key={i}
                 onClick={() => setCreedIndex(i)}
-                className="flex-1 py-3 text-sm font-semibold transition-colors"
+                className="flex-1 py-3 text-xs font-semibold transition-colors"
                 style={{
                   backgroundColor: creedIndex === i ? 'var(--ink)' : 'transparent',
                   color: creedIndex === i ? '#fff' : 'var(--ink-soft)',
                 }}
               >
-                {i === 0 ? 'Apostles\'' : 'Nicene'}
+                {c.shortTitle}
               </button>
             ))}
           </div>
@@ -230,7 +240,10 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
           <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
             <div className="h-1" style={{ backgroundColor: 'var(--terracotta)' }} />
             <div className="p-5">
-              <p className="text-xs font-semibold tracking-widest uppercase mb-5" style={{ color: 'var(--sage)' }}>{creed.title}</p>
+              <div className="flex items-baseline gap-3 mb-5">
+                <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--sage)' }}>{creed.title}</p>
+                <p className="text-xs" style={{ color: 'var(--border)' }}>{creed.date}</p>
+              </div>
               {creed.text.split('\n\n').map((para, i) => (
                 <div key={i} className="mb-4 flex gap-3 items-start">
                   <div className="w-0.5 flex-shrink-0 self-stretch rounded-full" style={{ backgroundColor: i === 0 ? 'var(--terracotta)' : 'var(--border)' }} />

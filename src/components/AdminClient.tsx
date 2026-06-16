@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { TEACHING_LIBRARY, THEMES, type LibraryTeaching } from '@/lib/teaching-library'
 
 interface Group { id: string; name: string; created_at: string }
 interface Teaching { id: string; week_label: string; question: string; group_id: string; created_at: string }
@@ -48,6 +49,23 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
   const [question, setQuestion] = useState('')
   const [postingTeaching, setPostingTeaching] = useState(false)
   const [teachingPosted, setTeachingPosted] = useState(false)
+
+  // Teaching library
+  const [libraryTheme, setLibraryTheme] = useState('All')
+  const [selectedLibraryId, setSelectedLibraryId] = useState('')
+
+  function loadLibraryTeaching(t: LibraryTeaching) {
+    setSelectedLibraryId(t.id)
+    setWeekLabel(t.week_label)
+    setHook(t.hook)
+    setScriptureRef(t.scripture_ref)
+    setApplication(t.application)
+    setQuestion(t.question)
+    // Scroll to form
+    setTimeout(() => {
+      document.getElementById('teaching-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 100)
+  }
 
   async function createGroup() {
     if (!newGroupName.trim()) return
@@ -336,44 +354,122 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
 
       {/* Teaching */}
       {tab === 'teaching' && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5">
           {groups.length === 0 ? (
             <div className="rounded-2xl p-5" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
               <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Create a group first before posting a teaching.</p>
             </div>
           ) : (
-            <div className="rounded-2xl p-5 flex flex-col gap-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
-              <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--sage)' }}>Post this week's teaching</p>
-
+            <>
+              {/* ── Teaching library ── */}
               <div>
-                <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--ink-soft)' }}>Group</label>
-                <select
-                  value={teachingGroupId}
-                  onChange={e => setTeachingGroupId(e.target.value)}
-                  className="w-full rounded-xl px-4 py-3 text-sm outline-none"
-                  style={{ backgroundColor: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--ink)' }}
-                >
-                  {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
-                </select>
+                <div className="flex items-center gap-3 mb-4">
+                  <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--sage)' }}>Teaching library</p>
+                  <div className="flex-1 h-px" style={{ backgroundColor: 'var(--border)' }} />
+                </div>
+                <p className="text-xs mb-4" style={{ color: 'var(--ink-soft)' }}>
+                  Choose a teaching to post as-is, or use it as a starting point and edit the form below.
+                </p>
+
+                {/* Theme filter */}
+                <div className="flex gap-2 flex-wrap mb-4">
+                  <button
+                    onClick={() => setLibraryTheme('All')}
+                    className="px-3 py-1 rounded-full text-xs font-semibold"
+                    style={{
+                      backgroundColor: libraryTheme === 'All' ? 'var(--ink)' : 'var(--surface)',
+                      color: libraryTheme === 'All' ? '#fff' : 'var(--ink-soft)',
+                      border: '1px solid var(--border)',
+                    }}
+                  >
+                    All
+                  </button>
+                  {THEMES.map(theme => (
+                    <button
+                      key={theme}
+                      onClick={() => setLibraryTheme(theme)}
+                      className="px-3 py-1 rounded-full text-xs font-semibold"
+                      style={{
+                        backgroundColor: libraryTheme === theme ? 'var(--ink)' : 'var(--surface)',
+                        color: libraryTheme === theme ? '#fff' : 'var(--ink-soft)',
+                        border: '1px solid var(--border)',
+                      }}
+                    >
+                      {theme}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  {TEACHING_LIBRARY
+                    .filter(t => libraryTheme === 'All' || t.theme === libraryTheme)
+                    .map(t => (
+                      <div
+                        key={t.id}
+                        className="rounded-2xl p-4"
+                        style={{
+                          backgroundColor: 'var(--surface)',
+                          border: selectedLibraryId === t.id ? '1.5px solid var(--terracotta)' : '1px solid var(--border)',
+                        }}
+                      >
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <div>
+                            <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: 'var(--sage)' }}>{t.theme}</p>
+                            <p className="font-semibold text-sm" style={{ color: 'var(--ink)' }}>{t.week_label}</p>
+                          </div>
+                          <button
+                            onClick={() => loadLibraryTeaching(t)}
+                            className="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold"
+                            style={{ backgroundColor: 'var(--terracotta)', color: '#fff' }}
+                          >
+                            Use this
+                          </button>
+                        </div>
+                        <p className="text-xs leading-relaxed line-clamp-2" style={{ color: 'var(--ink-soft)' }}>{t.hook}</p>
+                      </div>
+                    ))}
+                </div>
               </div>
 
-              {field('Week label', weekLabel, setWeekLabel, { placeholder: 'e.g. Week 1 · The Kingdom' })}
-              {field('Hook / opening thought', hook, setHook, { multiline: true, placeholder: 'The opening idea or story that frames the week…' })}
-              {field('Scripture reference', scriptureRef, setScriptureRef, { placeholder: 'e.g. Matthew 5:1–12' })}
-              {field('Application', application, setApplication, { multiline: true, placeholder: 'What does this mean for how we live this week?' })}
-              {field('Discussion question', question, setQuestion, { multiline: true, placeholder: 'The question members will respond to…' })}
+              {/* ── Manual / edit form ── */}
+              <div id="teaching-form" className="rounded-2xl p-5 flex flex-col gap-4" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+                <div className="flex items-center gap-3">
+                  <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--sage)' }}>
+                    {selectedLibraryId ? 'Edit & post' : 'Write your own'}
+                  </p>
+                  <div className="flex-1 h-px" style={{ backgroundColor: 'var(--border)' }} />
+                </div>
 
-              {teachingPosted && <p className="text-sm font-medium" style={{ color: 'var(--sage)' }}>Teaching posted. Members can see it now.</p>}
+                <div>
+                  <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--ink-soft)' }}>Group</label>
+                  <select
+                    value={teachingGroupId}
+                    onChange={e => setTeachingGroupId(e.target.value)}
+                    className="w-full rounded-xl px-4 py-3 text-sm outline-none"
+                    style={{ backgroundColor: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--ink)' }}
+                  >
+                    {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+                  </select>
+                </div>
 
-              <button
-                onClick={postTeaching}
-                disabled={postingTeaching || !hook.trim() || !scriptureRef.trim() || !question.trim() || !weekLabel.trim()}
-                className="py-3 rounded-2xl font-semibold text-sm"
-                style={{ backgroundColor: 'var(--terracotta)', color: '#fff', opacity: postingTeaching ? 0.6 : 1 }}
-              >
-                {postingTeaching ? 'Posting…' : 'Post teaching'}
-              </button>
-            </div>
+                {field('Week label', weekLabel, setWeekLabel, { placeholder: 'e.g. Week 1 · The Kingdom' })}
+                {field('Hook / opening thought', hook, setHook, { multiline: true, placeholder: 'The opening idea or story that frames the week…' })}
+                {field('Scripture reference', scriptureRef, setScriptureRef, { placeholder: 'e.g. Matthew 5:1–12' })}
+                {field('Application', application, setApplication, { multiline: true, placeholder: 'What does this mean for how we live this week?' })}
+                {field('Discussion question', question, setQuestion, { multiline: true, placeholder: 'The question members will respond to…' })}
+
+                {teachingPosted && <p className="text-sm font-medium" style={{ color: 'var(--sage)' }}>Teaching posted. Members can see it now.</p>}
+
+                <button
+                  onClick={postTeaching}
+                  disabled={postingTeaching || !hook.trim() || !scriptureRef.trim() || !question.trim() || !weekLabel.trim()}
+                  className="py-3 rounded-2xl font-semibold text-sm"
+                  style={{ backgroundColor: 'var(--terracotta)', color: '#fff', opacity: postingTeaching ? 0.6 : 1 }}
+                >
+                  {postingTeaching ? 'Posting…' : 'Post teaching'}
+                </button>
+              </div>
+            </>
           )}
 
           {teachings.length > 0 && (
