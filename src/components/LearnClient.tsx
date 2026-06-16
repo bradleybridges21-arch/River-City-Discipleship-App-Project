@@ -80,8 +80,9 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
 
   return (
     <div className="px-5 pt-10">
-      <h1 className="text-2xl font-semibold mb-1" style={{ color: 'var(--ink)' }}>Learn</h1>
-      <p className="text-sm mb-5" style={{ color: 'var(--ink-soft)' }}>Teaching, catechism, and the creeds.</p>
+      <h1 className="page-title">Learn</h1>
+      <span className="page-title-rule mb-4" />
+      <p className="text-sm mt-3 mb-5" style={{ color: 'var(--ink-soft)' }}>Teaching, catechism, and the creeds.</p>
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6 flex-wrap">

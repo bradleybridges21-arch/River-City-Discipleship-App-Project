@@ -170,9 +170,10 @@ export default function AdminClient({ userId, groups: initialGroups, teachings: 
 
   return (
     <div className="px-5 pt-10">
-      <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: 'var(--terracotta)' }}>Leader</p>
-      <h1 className="text-2xl font-semibold mb-1" style={{ color: 'var(--ink)' }}>Admin</h1>
-      <p className="text-sm mb-5" style={{ color: 'var(--ink-soft)' }}>Manage your groups, teachings, and members.</p>
+      <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--terracotta)' }}>Leader</p>
+      <h1 className="page-title">Admin</h1>
+      <span className="page-title-rule mb-4" />
+      <p className="text-sm mt-3 mb-5" style={{ color: 'var(--ink-soft)' }}>Manage your groups, teachings, and members.</p>
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6 flex-wrap">

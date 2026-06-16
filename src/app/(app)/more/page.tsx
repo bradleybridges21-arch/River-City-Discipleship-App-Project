@@ -82,7 +82,8 @@ export default async function MorePage() {
 
   return (
     <div className="px-5 pt-10 pb-4">
-      <h1 className="text-2xl font-semibold mb-1" style={{ color: 'var(--ink)' }}>Resources</h1>
+      <h1 className="page-title">Resources</h1>
+      <span className="page-title-rule mb-4" />
       <p className="text-sm mb-8" style={{ color: 'var(--ink-soft)' }}>Tools for the walk and for knowing yourself.</p>
 
       <div className="flex flex-col gap-8">

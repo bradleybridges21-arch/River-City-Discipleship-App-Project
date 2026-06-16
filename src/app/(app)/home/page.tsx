@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { getDailyPrayer, getPeriodLabel } from '@/lib/daily-prayers'
 import SignOutButton from '@/components/SignOutButton'
+import DailyPrayerBanner from '@/components/DailyPrayerBanner'
 
 const NAV_CARDS = [
   {
@@ -75,8 +75,6 @@ export default async function HomePage() {
     .eq('id', user.id)
     .single()
 
-  const prayer = getDailyPrayer()
-  const periodLabel = getPeriodLabel()
   const firstName = profile?.full_name?.split(' ')[0] ?? user.email?.split('@')[0] ?? 'Friend'
 
   const hour = new Date().getHours()
@@ -91,7 +89,7 @@ export default async function HomePage() {
             <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: 'var(--sage)' }}>
               River City Church
             </p>
-            <h1 className="text-2xl font-bold leading-tight" style={{ color: 'var(--ink)' }}>
+            <h1 className="page-title" style={{ fontSize: '1.85rem' }}>
               {greeting},<br />{firstName}.
             </h1>
           </div>
@@ -99,49 +97,9 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* Daily prayer card — hero, full bleed with gradient */}
+      {/* Daily prayer card — client component reads local time */}
       <div className="mx-4 mb-6">
-        <div
-          className="relative overflow-hidden"
-          style={{
-            borderRadius: '16px',
-            background: 'linear-gradient(145deg, #1e1b16 0%, #2e2820 60%, #3a3028 100%)',
-            boxShadow: 'var(--shadow-lg)',
-          }}
-        >
-          {/* Subtle texture overlay */}
-          <div style={{
-            position: 'absolute', inset: 0,
-            background: 'radial-gradient(ellipse at top right, rgba(184,92,58,0.18) 0%, transparent 60%)',
-            pointerEvents: 'none',
-          }} />
-          <div style={{
-            position: 'absolute', inset: 0,
-            background: 'radial-gradient(ellipse at bottom left, rgba(92,122,96,0.12) 0%, transparent 60%)',
-            pointerEvents: 'none',
-          }} />
-
-          <div className="relative px-6 py-7">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="h-px flex-1" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
-              <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: '#8fa88c' }}>
-                {periodLabel}
-              </p>
-              <div className="h-px flex-1" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
-            </div>
-
-            <p className="font-reading leading-relaxed mb-6" style={{ color: '#f0ece0', fontSize: '17px', fontStyle: 'italic', lineHeight: 1.7 }}>
-              "{prayer.text}"
-            </p>
-
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-px" style={{ backgroundColor: '#8fa88c' }} />
-              <p className="text-xs font-medium" style={{ color: '#8fa88c' }}>
-                {prayer.attribution}
-              </p>
-            </div>
-          </div>
-        </div>
+        <DailyPrayerBanner />
       </div>
 
       {/* Section label */}

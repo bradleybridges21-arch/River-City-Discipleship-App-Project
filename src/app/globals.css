@@ -48,6 +48,25 @@ html, body {
   font-family: 'Newsreader', Georgia, serif;
 }
 
+/* Display titles — Newsreader serif for page headings */
+.page-title {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 2.25rem;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.page-title-rule {
+  display: block;
+  width: 2.5rem;
+  height: 2px;
+  background: var(--terracotta);
+  margin-top: 0.5rem;
+  border-radius: 2px;
+}
+
 /* Card depth layers */
 .card {
   background: var(--surface);

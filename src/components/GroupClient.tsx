@@ -30,8 +30,9 @@ export default function GroupClient({ memberships, members }: Props) {
       {/* Group header */}
       <div className="px-5 pt-10 pb-5 relative overflow-hidden" style={{ background: 'linear-gradient(160deg, var(--sage-light) 0%, var(--surface) 60%)' }}>
         <div className="absolute top-0 left-0 right-0 h-0.5" style={{ backgroundColor: 'var(--sage)' }} />
-        <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: 'var(--sage)' }}>Your group</p>
-        <h1 className="text-2xl font-semibold mb-0" style={{ color: 'var(--ink)' }}>{group?.name ?? 'Discipleship Group'}</h1>
+        <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--sage)' }}>Your group</p>
+        <h1 className="page-title">{group?.name ?? 'Discipleship Group'}</h1>
+        <span className="page-title-rule" style={{ background: 'var(--sage)' }} />
       </div>
       <div className="px-5 pt-4">
 
