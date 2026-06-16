@@ -7,6 +7,9 @@ import { HYMNS, HYMN_CATEGORIES } from '@/lib/hymns'
 import { BIBLE_BOOKS, OT_SECTIONS, NT_SECTIONS } from '@/lib/bible-books'
 import { COUNTERFEITS, CAPSTONE } from '@/lib/true-blessing'
 import { TEACHING_LIBRARY } from '@/lib/teaching-library'
+import { HARD_WORDS, HARD_WORDS_INTRO } from '@/lib/hard-words'
+import { WORDS_NOT_IN_BIBLE, WORDS_INTRO } from '@/lib/words-not-in-bible'
+import { THREE_ENEMIES, DISCERNMENT_QUESTIONS, UNIFIED_RESPONSE, DISCERNMENT_INTRO } from '@/lib/discernment'
 
 interface Teaching {
   id: string; week_label: string; hook: string
@@ -118,7 +121,10 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
   latestResponse: Response | null
 }) {
   const supabase = createClient()
-  const [tab, setTab] = useState<'teaching' | 'catechism' | 'creeds' | 'didache' | 'solas' | 'hymns' | 'bible' | 'blessing'>('teaching')
+  const [tab, setTab] = useState<'teaching' | 'catechism' | 'creeds' | 'didache' | 'solas' | 'hymns' | 'bible' | 'blessing' | 'hardwords' | 'notinbible' | 'discernment'>('teaching')
+  const [expandedWord, setExpandedWord] = useState<string | null>(null)
+  const [expandedBibleWord, setExpandedBibleWord] = useState<string | null>(null)
+  const [expandedEnemy, setExpandedEnemy] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [creedIndex, setCreedIndex] = useState(0)
   const [responseDraft, setResponseDraft] = useState(latestResponse?.body ?? '')
@@ -178,6 +184,15 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
 
     ...COUNTERFEITS.filter(c => [c.name, c.the_lie, c.the_truth, c.church_witness, c.transformation, c.scriptureText].some(v => v.toLowerCase().includes(q)))
       .map(c => ({ type: 'The Blessing', title: c.name, subtitle: c.tagline, body: c.the_truth.slice(0, 180) + '…', tabKey: 'blessing', itemId: c.id })),
+
+    ...HARD_WORDS.filter(w => [w.word, w.what_it_actually_means, w.what_you_may_have_heard, w.the_grace_in_it, w.scriptureText].some(v => v.toLowerCase().includes(q)))
+      .map(w => ({ type: 'Hard Words', title: w.word, subtitle: w.scripture, body: w.what_it_actually_means.slice(0, 180) + '…', tabKey: 'hardwords', itemId: w.id })),
+
+    ...WORDS_NOT_IN_BIBLE.filter(w => [w.word, w.the_surprise, w.what_scripture_does_say, w.why_it_matters].some(v => v.toLowerCase().includes(q)))
+      .map(w => ({ type: 'Not in the Bible', title: w.word, subtitle: w.category, body: w.the_surprise.slice(0, 180) + '…', tabKey: 'notinbible', itemId: w.id })),
+
+    ...THREE_ENEMIES.filter(e => [e.name, e.how_it_works, e.meaning, e.the_grace].some(v => v.toLowerCase().includes(q)))
+      .map(e => ({ type: 'Flesh or Foe', title: e.name, subtitle: e.greek, body: e.how_it_works.slice(0, 180) + '…', tabKey: 'discernment', itemId: e.id })),
   ]
 
   return (
@@ -207,7 +222,7 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
 
         {/* Scrollable pill tabs */}
         <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none', marginBottom: '1.25rem' }}>
-          {([['teaching', 'This Week'], ['catechism', 'Catechism'], ['creeds', 'Creeds'], ['didache', 'Didache'], ['solas', '5 Solas'], ['hymns', 'Hymns'], ['bible', 'Bible Books'], ['blessing', 'The Blessing']] as const).map(([key, label]) => (
+          {([['teaching', 'This Week'], ['catechism', 'Catechism'], ['creeds', 'Creeds'], ['didache', 'Didache'], ['solas', '5 Solas'], ['hymns', 'Hymns'], ['bible', 'Bible Books'], ['blessing', 'The Blessing'], ['hardwords', 'Hard Words'], ['notinbible', 'Not in the Bible'], ['discernment', 'Flesh or Foe?']] as const).map(([key, label]) => (
             <button
               key={key}
               onClick={() => setTab(key)}
@@ -666,6 +681,211 @@ export default function LearnClient({ userId, teachings, latestResponse }: {
                 <p key={i} className={i === 0 ? 'font-reading' : ''} style={{ fontSize: i === 0 ? '16px' : '14px', lineHeight: 1.75, color: i === 0 ? 'rgba(255,255,255,0.88)' : 'rgba(255,255,255,0.60)', marginBottom: '1rem', fontStyle: i === 0 ? 'normal' : 'normal', position: 'relative' }}>{para}</p>
               ))}
               <p className="font-reading" style={{ fontSize: '17px', fontStyle: 'italic', color: 'rgba(255,255,255,0.82)', position: 'relative', marginTop: '0.5rem' }}>He is the blessing. Everything else is gift.</p>
+            </div>
+          </div>
+        )}
+
+        {/* ── Hard Words ── */}
+        {!searchQuery.trim() && tab === 'hardwords' && (
+          <div>
+            <p style={{ fontSize: '14px', lineHeight: 1.75, color: 'var(--ink-soft)', marginBottom: '1.5rem', fontFamily: 'Newsreader, Georgia, serif', fontStyle: 'italic' }}>{HARD_WORDS_INTRO}</p>
+            {HARD_WORDS.map(word => {
+              const open = expandedWord === word.id
+              return (
+                <div key={word.id} style={{ borderBottom: '1px solid var(--border-soft)' }}>
+                  <button
+                    onClick={() => setExpandedWord(open ? null : word.id)}
+                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '1.125rem 0', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit' }}
+                  >
+                    <div>
+                      <p style={{ fontFamily: 'Newsreader, Georgia, serif', fontSize: '20px', fontWeight: 500, color: 'var(--ink)', lineHeight: 1.2, marginBottom: '3px' }}>{word.word}</p>
+                      <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ink-muted)' }}>{word.the_greek_or_hebrew.split(' ')[0]} {word.the_greek_or_hebrew.split(' ')[1]}</p>
+                    </div>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--ink-muted)', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                      <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                  </button>
+                  {open && (
+                    <div style={{ paddingBottom: '1.5rem' }}>
+                      {/* What you may have heard */}
+                      <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--terracotta)', marginBottom: '6px' }}>What You May Have Heard</p>
+                      <p style={{ fontSize: '14px', lineHeight: 1.75, color: 'var(--ink-soft)', marginBottom: '1.125rem' }}>{word.what_you_may_have_heard}</p>
+
+                      {/* What it actually means */}
+                      <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--blue)', marginBottom: '6px' }}>What It Actually Means</p>
+                      <p style={{ fontSize: '14px', lineHeight: 1.75, color: 'var(--ink-soft)', marginBottom: '1.125rem' }}>{word.what_it_actually_means}</p>
+
+                      {/* Greek / Hebrew */}
+                      <div style={{ background: 'rgba(30,27,22,0.04)', borderRadius: '10px', padding: '10px 14px', marginBottom: '1.125rem' }}>
+                        <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--ink-muted)', marginBottom: '4px' }}>The Word</p>
+                        <p style={{ fontSize: '13px', lineHeight: 1.65, color: 'var(--ink-soft)' }}>{word.the_greek_or_hebrew}</p>
+                      </div>
+
+                      {/* Scripture */}
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', marginBottom: '1.125rem', background: 'rgba(30,27,22,0.04)', borderRadius: '10px', padding: '12px 14px' }}>
+                        <div style={{ width: '2px', flexShrink: 0, alignSelf: 'stretch', borderRadius: '2px', background: 'var(--blue)' }} />
+                        <div>
+                          <p className="font-reading" style={{ fontSize: '15px', lineHeight: 1.75, fontStyle: 'italic', color: 'var(--ink)' }}>{word.scriptureText}</p>
+                          <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ink-muted)', marginTop: '6px' }}>{word.scripture}</p>
+                        </div>
+                      </div>
+
+                      {/* How Jesus used it */}
+                      <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--green)', marginBottom: '6px' }}>How Jesus Used It</p>
+                      <p style={{ fontSize: '14px', lineHeight: 1.75, color: 'var(--ink-soft)', marginBottom: '1.125rem' }}>{word.how_jesus_used_it}</p>
+
+                      {/* The grace in it */}
+                      <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '6px' }}>The Grace in It</p>
+                      <p style={{ fontSize: '14px', lineHeight: 1.75, color: 'var(--ink-soft)', marginBottom: '1.125rem' }}>{word.the_grace_in_it}</p>
+
+                      {/* Transformation */}
+                      <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--mauve)', marginBottom: '6px' }}>Becoming Like Christ</p>
+                      <p style={{ fontSize: '14px', lineHeight: 1.75, color: 'var(--ink-soft)' }}>{word.transformation}</p>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* ── Not in the Bible ── */}
+        {!searchQuery.trim() && tab === 'notinbible' && (
+          <div>
+            <p style={{ fontSize: '14px', lineHeight: 1.75, color: 'var(--ink-soft)', marginBottom: '1.5rem', fontFamily: 'Newsreader, Georgia, serif', fontStyle: 'italic' }}>{WORDS_INTRO}</p>
+            {WORDS_NOT_IN_BIBLE.map(word => {
+              const open = expandedBibleWord === word.id
+              return (
+                <div key={word.id} style={{ borderBottom: '1px solid var(--border-soft)' }}>
+                  <button
+                    onClick={() => setExpandedBibleWord(open ? null : word.id)}
+                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '1.125rem 0', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit' }}
+                  >
+                    <div>
+                      <p style={{ fontFamily: 'Newsreader, Georgia, serif', fontSize: '20px', fontWeight: 500, color: 'var(--ink)', lineHeight: 1.2, marginBottom: '3px' }}>{word.word}</p>
+                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '6px', background: 'rgba(30,27,22,0.07)', color: 'var(--ink-muted)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{word.category}</span>
+                    </div>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--ink-muted)', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                      <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                  </button>
+                  {open && (
+                    <div style={{ paddingBottom: '1.5rem' }}>
+                      <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--terracotta)', marginBottom: '6px' }}>The Surprise</p>
+                      <p style={{ fontSize: '14px', lineHeight: 1.75, color: 'var(--ink-soft)', marginBottom: '1.125rem' }}>{word.the_surprise}</p>
+
+                      <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--blue)', marginBottom: '6px' }}>What Scripture Does Say</p>
+                      <p style={{ fontSize: '14px', lineHeight: 1.75, color: 'var(--ink-soft)', marginBottom: '1.125rem' }}>{word.what_scripture_does_say}</p>
+
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', marginBottom: '1.125rem', background: 'rgba(30,27,22,0.04)', borderRadius: '10px', padding: '12px 14px' }}>
+                        <div style={{ width: '2px', flexShrink: 0, alignSelf: 'stretch', borderRadius: '2px', background: 'var(--blue)' }} />
+                        <div>
+                          <p className="font-reading" style={{ fontSize: '15px', lineHeight: 1.75, fontStyle: 'italic', color: 'var(--ink)' }}>{word.scriptureText}</p>
+                          <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ink-muted)', marginTop: '6px' }}>{word.scripture}</p>
+                        </div>
+                      </div>
+
+                      <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '6px' }}>Why It Matters</p>
+                      <p style={{ fontSize: '14px', lineHeight: 1.75, color: 'var(--ink-soft)', marginBottom: '1.125rem' }}>{word.why_it_matters}</p>
+
+                      <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--green)', marginBottom: '6px' }}>The Principle</p>
+                      <p style={{ fontSize: '14px', lineHeight: 1.75, color: 'var(--ink-soft)' }}>{word.the_principle}</p>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* ── Flesh or Foe? ── */}
+        {!searchQuery.trim() && tab === 'discernment' && (
+          <div>
+            <p style={{ fontSize: '14px', lineHeight: 1.75, color: 'var(--ink-soft)', marginBottom: '1.5rem', fontFamily: 'Newsreader, Georgia, serif', fontStyle: 'italic' }}>{DISCERNMENT_INTRO}</p>
+
+            {/* Three enemies */}
+            <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--ink-muted)', marginBottom: '1rem' }}>The Three Sources</p>
+            {THREE_ENEMIES.map(enemy => {
+              const open = expandedEnemy === enemy.id
+              const colors = { flesh: 'var(--terracotta)', world: 'var(--gold)', enemy: 'var(--mauve)' }
+              const color = colors[enemy.id]
+              return (
+                <div key={enemy.id} style={{ borderBottom: '1px solid var(--border-soft)' }}>
+                  <button
+                    onClick={() => setExpandedEnemy(open ? null : enemy.id)}
+                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '1.125rem 0', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit' }}
+                  >
+                    <div>
+                      <p style={{ fontFamily: 'Newsreader, Georgia, serif', fontSize: '20px', fontWeight: 500, color: 'var(--ink)', lineHeight: 1.2, marginBottom: '3px' }}>{enemy.name}</p>
+                      <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ink-muted)' }}>{enemy.greek}</p>
+                    </div>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--ink-muted)', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                      <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                  </button>
+                  {open && (
+                    <div style={{ paddingBottom: '1.5rem' }}>
+                      <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color, marginBottom: '6px' }}>What It Is</p>
+                      <p style={{ fontSize: '14px', lineHeight: 1.75, color: 'var(--ink-soft)', marginBottom: '1.125rem' }}>{enemy.meaning}</p>
+
+                      <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color, marginBottom: '6px' }}>How It Works</p>
+                      <p style={{ fontSize: '14px', lineHeight: 1.75, color: 'var(--ink-soft)', marginBottom: '1.125rem' }}>{enemy.how_it_works}</p>
+
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', marginBottom: '1.125rem', background: 'rgba(30,27,22,0.04)', borderRadius: '10px', padding: '12px 14px' }}>
+                        <div style={{ width: '2px', flexShrink: 0, alignSelf: 'stretch', borderRadius: '2px', background: color }} />
+                        <div>
+                          <p className="font-reading" style={{ fontSize: '15px', lineHeight: 1.75, fontStyle: 'italic', color: 'var(--ink)' }}>{enemy.scriptureText}</p>
+                          <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ink-muted)', marginTop: '6px' }}>{enemy.scripture}</p>
+                        </div>
+                      </div>
+
+                      <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color, marginBottom: '6px' }}>Signs</p>
+                      <ul style={{ paddingLeft: 0, listStyle: 'none', marginBottom: '1.125rem' }}>
+                        {enemy.symptoms.map((s, i) => (
+                          <li key={i} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', paddingBottom: '6px' }}>
+                            <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: color, marginTop: '8px', flexShrink: 0 }} />
+                            <p style={{ fontSize: '14px', lineHeight: 1.6, color: 'var(--ink-soft)', margin: 0 }}>{s}</p>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--green)', marginBottom: '6px' }}>The Grace</p>
+                      <p style={{ fontSize: '14px', lineHeight: 1.75, color: 'var(--ink-soft)' }}>{enemy.the_grace}</p>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+
+            {/* Diagnostic questions */}
+            <div style={{ marginTop: '2rem', marginBottom: '1.5rem' }}>
+              <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--ink-muted)', marginBottom: '1rem' }}>Diagnostic Questions</p>
+              {DISCERNMENT_QUESTIONS.map((dq, i) => {
+                const colors2: Record<string, string> = { flesh: 'var(--terracotta)', world: 'var(--gold)', enemy: 'var(--mauve)', clarifying: 'var(--slate)' }
+                const c = colors2[dq.points_toward]
+                return (
+                  <div key={i} style={{ borderBottom: '1px solid var(--border-soft)', paddingTop: '1rem', paddingBottom: '1rem' }}>
+                    <p style={{ fontFamily: 'Newsreader, Georgia, serif', fontSize: '16px', fontWeight: 500, color: 'var(--ink)', lineHeight: 1.4, marginBottom: '6px' }}>{dq.question}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '6px', background: c + '18', color: c, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{dq.points_toward === 'clarifying' ? 'Clarifying' : `Points to: ${dq.points_toward}`}</span>
+                    </div>
+                    <p style={{ fontSize: '13px', lineHeight: 1.65, color: 'var(--ink-muted)' }}>{dq.explanation}</p>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Unified response */}
+            <div style={{ background: 'linear-gradient(160deg, var(--dark) 0%, var(--dark-2) 100%)', borderRadius: '20px', padding: '1.5rem', position: 'relative', overflow: 'hidden', marginTop: '0.5rem' }}>
+              <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: '60%', paddingBottom: '60%', background: 'radial-gradient(circle, rgba(59,110,168,0.18) 0%, transparent 68%)', pointerEvents: 'none' }} />
+              <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginBottom: '0.75rem', position: 'relative' }}>{UNIFIED_RESPONSE.title}</p>
+              {UNIFIED_RESPONSE.body.split('\n\n').map((para, i) => (
+                <p key={i} style={{ fontSize: '14px', lineHeight: 1.8, color: 'rgba(255,255,255,0.72)', marginBottom: '0.875rem', position: 'relative' }}>{para}</p>
+              ))}
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.10)', paddingTop: '1rem', marginTop: '0.5rem', position: 'relative' }}>
+                <p className="font-reading" style={{ fontSize: '16px', fontStyle: 'italic', lineHeight: 1.75, color: 'rgba(255,255,255,0.82)', marginBottom: '6px' }}>{UNIFIED_RESPONSE.scriptureText}</p>
+                <p style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.35)' }}>{UNIFIED_RESPONSE.scripture}</p>
+              </div>
             </div>
           </div>
         )}
