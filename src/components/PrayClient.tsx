@@ -19,7 +19,7 @@ type Tab = 'office' | 'group' | 'journal'
 const OFFICE_PRAYERS = [
   {
     label: 'Morning',
-    icon: '🌅',
+    icon: null,
     prayers: [
       { title: 'Opening', text: 'O Lord, open my lips, and my mouth will declare your praise.', ref: 'Psalm 51:15' },
       { title: 'The Lord\'s Prayer', text: 'Our Father, who art in heaven, hallowed be thy name. Thy kingdom come, thy will be done, on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us. Lead us not into temptation, but deliver us from evil. For thine is the kingdom, and the power, and the glory, for ever and ever. Amen.', ref: 'Matthew 6:9–13' },
@@ -28,7 +28,7 @@ const OFFICE_PRAYERS = [
   },
   {
     label: 'Midday',
-    icon: '☀️',
+    icon: null,
     prayers: [
       { title: 'Pause', text: 'Be still, and know that I am God.', ref: 'Psalm 46:10' },
       { title: 'Midday Collect', text: 'Blessed Savior, at this hour you hung upon the cross, stretching out your loving arms. Grant that all the peoples of the earth may look to you and be saved; for your mercies\' sake. Amen.', ref: 'Book of Common Prayer' },
@@ -37,7 +37,7 @@ const OFFICE_PRAYERS = [
   },
   {
     label: 'Evening',
-    icon: '🌙',
+    icon: null,
     prayers: [
       { title: 'Opening', text: 'Lord, now you are letting your servant depart in peace, according to your word; for my eyes have seen your salvation.', ref: 'Luke 2:29–30' },
       { title: 'Collect for Aid', text: 'Lighten our darkness, we beseech thee, O Lord; and by thy great mercy defend us from all perils and dangers of this night; for the love of thy only Son, our Savior Jesus Christ. Amen.', ref: 'Book of Common Prayer (1662)' },
@@ -132,14 +132,14 @@ export default function PrayClient({ userId, groupPrayers: initialPrayers, journ
               <button
                 key={s.label}
                 onClick={() => setOfficeSection(i)}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold"
+                className="px-4 py-1.5 rounded-full text-xs font-semibold"
                 style={{
                   backgroundColor: officeSection === i ? 'var(--ink)' : 'var(--surface)',
                   color: officeSection === i ? '#fff' : 'var(--ink-soft)',
                   border: '1px solid var(--border)',
                 }}
               >
-                {s.icon} {s.label}
+                {s.label}
               </button>
             ))}
           </div>
